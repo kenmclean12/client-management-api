@@ -34,3 +34,4 @@
 /Users/kenmclean/Desktop/dotnet/api1/api1/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/kenmclean/Desktop/dotnet/api1/api1/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/kenmclean/Desktop/dotnet/api1/api1/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/Users/kenmclean/Desktop/dotnet/api1/api1/obj/Debug/net10.0/api1.sourcelink.json
