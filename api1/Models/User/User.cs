@@ -1,3 +1,5 @@
+namespace Api1.Models.User;
+
 public class User
 {
   public int Id { get; set; }
@@ -10,5 +12,5 @@ public class User
   public string LastName { get; set; } = null!;
 
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-  public DateTime? UpdatedAt { get; set; }
+  public DateTime? UpdatedAt { get; set; } = null;
 }
