@@ -14,22 +14,24 @@ public static class UserService
 
     group.MapGet("/", async (AppDbContext db) =>
         {
-          return Results.Ok(await db.Users.ToListAsync());
+          var users = await db.Users.ToListAsync();
+          var dtos = users.Select(u => u.ToResponse()).ToList();
+          return Results.Ok(dtos);
         }
     )
     .WithSummary("Find all users")
     .WithDescription("Returns all user records")
-    .Produces<User>(StatusCodes.Status200OK);
+    .Produces<UserResponseDto>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
-        return user is not null ? Results.Ok(user) : Results.NotFound();
+        return user is not null ? Results.Ok(user.ToResponse()) : Results.NotFound();
       }
     )
     .WithSummary("Find a user by ID")
     .WithDescription("Find a user record by ID")
-    .Produces<User>(StatusCodes.Status200OK)
+    .Produces<UserResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
@@ -38,12 +40,12 @@ public static class UserService
         var user = User.Create(dto);
         db.Users.Add(user);
         await db.SaveChangesAsync();
-        return Results.Created($"/user/{user.Id}", user);
+        return Results.Created($"/user/{user.Id}", user.ToResponse());
       }
     )
     .WithSummary("Create a new user")
     .WithDescription("Creates a user and returns the newly created record.")
-    .Produces<User>(StatusCodes.Status201Created)
+    .Produces<UserResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
@@ -53,12 +55,12 @@ public static class UserService
         if (user is null) return Results.NotFound();
         user.Update(dto);
         await db.SaveChangesAsync();
-        return Results.Ok(user);
+        return Results.Ok(user.ToResponse());
       }
     )
     .WithSummary("Update user information")
     .WithDescription("Updates a user and returns the newly created record.")
-    .Produces<User>(StatusCodes.Status200OK)
+    .Produces<UserResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
@@ -75,11 +77,11 @@ public static class UserService
       user.UpdatedAt = DateTime.UtcNow;
 
       await db.SaveChangesAsync();
-      return Results.Ok(user);
+      return Results.Ok(user.ToResponse());
     })
     .WithSummary("Reset a users password")
     .WithDescription("Resets a users password and returns the newly created record.")
-    .Produces<User>(StatusCodes.Status201Created)
+    .Produces<UserResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);

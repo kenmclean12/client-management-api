@@ -66,6 +66,26 @@ public class User
 
     UpdatedAt = DateTime.UtcNow;
   }
+
+  public UserResponseDto ToResponse()
+  {
+    var response = new UserResponseDto
+    {
+      Id = Id,
+      UserName = UserName,
+      Email = Email,
+      Role = Role,
+      FirstName = FirstName,
+      LastName = LastName,
+      AvatarUrl = AvatarUrl,
+      CreatedAt = CreatedAt,
+    };
+
+    if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
+
+    return response;
+  }
+  
   public bool VerifyPassword(string password)
   {
     var result = _passwordHasher.VerifyHashedPassword(this, PasswordHash, password);
