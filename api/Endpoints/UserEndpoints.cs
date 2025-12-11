@@ -10,7 +10,7 @@ public static class UserService
 {
   public static async Task MapUserEndpoints(this WebApplication app)
   {
-    var group = app.MapGroup("/user");
+    var group = app.MapGroup("/user").WithTags("User");
 
     group.MapGet("/", async (AppDbContext db) =>
         {
