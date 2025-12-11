@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/api.csproj": {}
+    "/Users/kenmclean/Desktop/resume-development/client-management-api/api/api.csproj": {}
   },
   "projects": {
-    "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/api.csproj": {
+    "/Users/kenmclean/Desktop/resume-development/client-management-api/api/api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/api.csproj",
+        "projectUniqueName": "/Users/kenmclean/Desktop/resume-development/client-management-api/api/api.csproj",
         "projectName": "api",
-        "projectPath": "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/api.csproj",
+        "projectPath": "/Users/kenmclean/Desktop/resume-development/client-management-api/api/api.csproj",
         "packagesPath": "/Users/kenmclean/.nuget/packages/",
-        "outputPath": "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/obj/",
+        "outputPath": "/Users/kenmclean/Desktop/resume-development/client-management-api/api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/kenmclean/.nuget/NuGet/NuGet.Config"

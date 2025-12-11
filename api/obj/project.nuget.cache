@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "g7/OfurqnOc=",
+  "dgSpecHash": "y4C5Hoj6e0c=",
   "success": true,
-  "projectFilePath": "/Users/kenmclean/Desktop/resume-development/dotnet-web-api/api/api.csproj",
+  "projectFilePath": "/Users/kenmclean/Desktop/resume-development/client-management-api/api/api.csproj",
   "expectedPackageFiles": [
     "/Users/kenmclean/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/kenmclean/.nuget/packages/microsoft.aspnetcore.openapi/10.0.0/microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
