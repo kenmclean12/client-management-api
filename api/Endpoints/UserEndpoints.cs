@@ -46,17 +46,17 @@ public static class UserService
 
     group.MapPut("/reset-password/{id:int}", async (AppDbContext db, UserPasswordResetDto dto, int id) =>
     {
-        var user = await db.Users.FindAsync(id);
-        if (user is null) return Results.NotFound();
+      var user = await db.Users.FindAsync(id);
+      if (user is null) return Results.NotFound();
 
-        var valid = user.VerifyPassword(dto.Password);
-        if (!valid) return Results.BadRequest("Password invalid");
+      var valid = user.VerifyPassword(dto.Password);
+      if (!valid) return Results.BadRequest("Password invalid");
 
-        user.PasswordHash = User.HashPassword(user, dto.NewPassword);
-        user.UpdatedAt = DateTime.UtcNow;
-  
-        await db.SaveChangesAsync();
-        return Results.Ok(user);
+      user.PasswordHash = User.HashPassword(user, dto.NewPassword);
+      user.UpdatedAt = DateTime.UtcNow;
+
+      await db.SaveChangesAsync();
+      return Results.Ok(user);
     });
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>

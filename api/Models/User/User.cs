@@ -1,6 +1,6 @@
 using api.DTOs.User;
 using Microsoft.AspNetCore.Identity;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace api.Models.User;
 
@@ -8,11 +8,24 @@ public class User
 {
   public int Id { get; set; }
 
+  [Required]
+  [MaxLength(30)]
   public string UserName { get; set; } = null!;
+
+  [Required]
+  [EmailAddress]
+  [MaxLength(100)]
   public string Email { get; set; } = null!;
+
+  [Required]
   public string PasswordHash { get; set; } = null!;
 
+  [Required]
+  [MaxLength(30)]
   public string FirstName { get; set; } = null!;
+
+  [Required]
+  [MaxLength(30)]
   public string LastName { get; set; } = null!;
 
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
