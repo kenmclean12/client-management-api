@@ -49,10 +49,10 @@ public static class UserService
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
 
-        var valid = user.VerifyPassword(dto.password);
+        var valid = user.VerifyPassword(dto.Password);
         if (!valid) return Results.BadRequest("Password invalid");
 
-        user.PasswordHash = User.HashPassword(user, dto.newPassword);
+        user.PasswordHash = User.HashPassword(user, dto.NewPassword);
         user.UpdatedAt = DateTime.UtcNow;
   
         await db.SaveChangesAsync();
