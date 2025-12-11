@@ -18,6 +18,9 @@ public class User
   public string Email { get; set; } = null!;
 
   [Required]
+  public UserRole Role { get; set; } = UserRole.ReadOnly;
+
+  [Required]
   public string PasswordHash { get; set; } = null!;
 
   [Required]
@@ -41,6 +44,7 @@ public class User
       Email = dto.Email,
       FirstName = dto.FirstName,
       LastName = dto.LastName,
+      Role = dto.Role,
     };
 
     user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
@@ -53,6 +57,7 @@ public class User
     if (dto.Email is not null) Email = dto.Email;
     if (dto.FirstName is not null) FirstName = dto.FirstName;
     if (dto.LastName is not null) LastName = dto.LastName;
+    if (dto.Role.HasValue) Role = dto.Role.Value;
 
     UpdatedAt = DateTime.UtcNow;
   }
