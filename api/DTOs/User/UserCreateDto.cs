@@ -27,4 +27,7 @@ public class UserCreateDto
 
   [Required]
   public UserRole Role { get; set; } = UserRole.ReadOnly;
+
+  [MaxLength(200)]
+  public string? AvatarUrl { get; set; }
 }

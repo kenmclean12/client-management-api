@@ -17,6 +17,8 @@ public class UserUpdateDto
   [MaxLength(30)]
   public string? LastName { get; set; }
 
-  [Required]
   public UserRole? Role { get; set; }
+
+  [MaxLength(200)]
+  public string? AvatarUrl { get; set; }
 }

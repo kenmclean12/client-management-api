@@ -31,6 +31,8 @@ public class User
   [MaxLength(30)]
   public string LastName { get; set; } = null!;
 
+  [MaxLength(200)]
+  public string AvatarUrl { get; set; } = null!;
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime? UpdatedAt { get; set; } = null;
 
@@ -47,6 +49,8 @@ public class User
       Role = dto.Role,
     };
 
+
+    if (dto.AvatarUrl is not null) user.AvatarUrl = dto.AvatarUrl;
     user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
     return user;
   }
@@ -57,6 +61,7 @@ public class User
     if (dto.Email is not null) Email = dto.Email;
     if (dto.FirstName is not null) FirstName = dto.FirstName;
     if (dto.LastName is not null) LastName = dto.LastName;
+    if (dto.AvatarUrl is not null) AvatarUrl = dto.AvatarUrl;
     if (dto.Role.HasValue) Role = dto.Role.Value;
 
     UpdatedAt = DateTime.UtcNow;
