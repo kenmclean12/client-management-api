@@ -32,5 +32,26 @@ public static class UserService
         return Results.Created($"/user/{user.Id}", user);
       }
     );
+
+    group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
+      {
+        var user = await db.Users.FindAsync(id);
+        if (user is null) return Results.NotFound();
+        user.Update(dto);
+        await db.SaveChangesAsync();
+        return Results.Ok(user);
+
+      }
+    );
+
+    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
+      {
+        var user = await db.Users.FindAsync(id);
+        if (user is null) return Results.NotFound();
+        db.Users.Remove(user);
+        await db.SaveChangesAsync();
+        return Results.NoContent();
+      }
+    );
   }
 }
