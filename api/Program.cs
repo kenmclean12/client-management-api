@@ -1,7 +1,13 @@
+using api.Data;
+using api.Endpoints;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION")));
+builder.Services.AddDbContext<AppDbContext>(options => 
+  options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))
+);
 
 var app = builder.Build();
 
@@ -13,10 +19,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () =>
-{
-    Console.WriteLine("First App");
-    return "Hello World!";
-});
+app.MapUserEndpoints();
 
 app.Run();

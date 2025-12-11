@@ -1,4 +1,6 @@
-namespace Api.Models.User;
+using api.DTOs.User;
+
+namespace api.Models.User;
 
 public class User
 {
@@ -13,4 +15,21 @@ public class User
 
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime? UpdatedAt { get; set; } = null;
+
+  public static User Create(UserCreateDto dto)
+    {
+        return new User
+        {
+            UserName = dto.UserName,
+            Email = dto.Email,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PasswordHash = HashPassword(dto.Password),
+        };
+    }
+
+  private static string HashPassword(string password)
+    {
+        return password;
+    }
 }
