@@ -2,12 +2,13 @@ using api.Data;
 using api.Models.User;
 using api.DTOs.User;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace api.Endpoints;
 
 public static class UserService
 {
-  public static void MapUserEndpoints(this WebApplication app)
+  public static async Task MapUserEndpoints(this WebApplication app)
   {
     var group = app.MapGroup("/user");
 
@@ -40,9 +41,23 @@ public static class UserService
         user.Update(dto);
         await db.SaveChangesAsync();
         return Results.Ok(user);
-
       }
     );
+
+    group.MapPut("/reset-password/{id:int}", async (AppDbContext db, UserPasswordResetDto dto, int id) =>
+    {
+        var user = await db.Users.FindAsync(id);
+        if (user is null) return Results.NotFound();
+
+        var valid = user.VerifyPassword(dto.password);
+        if (!valid) return Results.BadRequest("Password invalid");
+
+        user.PasswordHash = User.HashPassword(user, dto.newPassword);
+        user.UpdatedAt = DateTime.UtcNow;
+  
+        await db.SaveChangesAsync();
+        return Results.Ok(user);
+    });
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {

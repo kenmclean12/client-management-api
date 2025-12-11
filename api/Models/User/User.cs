@@ -1,4 +1,6 @@
 using api.DTOs.User;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace api.Models.User;
 
@@ -16,31 +18,39 @@ public class User
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime? UpdatedAt { get; set; } = null;
 
+  private static readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+
   public static User Create(UserCreateDto dto)
   {
-    return new User
+    var user = new User
     {
       UserName = dto.UserName,
       Email = dto.Email,
       FirstName = dto.FirstName,
       LastName = dto.LastName,
-      PasswordHash = HashPassword(dto.Password),
     };
+
+    user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+    return user;
   }
 
   public void Update(UserUpdateDto dto)
   {
     if (dto.UserName is not null) UserName = dto.UserName;
     if (dto.Email is not null) Email = dto.Email;
-    if (dto.Password is not null) PasswordHash = HashPassword(dto.Password);
     if (dto.FirstName is not null) FirstName = dto.FirstName;
     if (dto.LastName is not null) LastName = dto.LastName;
 
     UpdatedAt = DateTime.UtcNow;
   }
-
-  private static string HashPassword(string password)
+  public bool VerifyPassword(string password)
   {
-    return password;
+    var result = _passwordHasher.VerifyHashedPassword(this, PasswordHash, password);
+    return result == PasswordVerificationResult.Success;
+  }
+
+  public static string HashPassword(User user, string password)
+  {
+    return _passwordHasher.HashPassword(user, password);
   }
 }

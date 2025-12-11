@@ -19,6 +19,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapUserEndpoints();
+await app.MapUserEndpoints();
 
 app.Run();
