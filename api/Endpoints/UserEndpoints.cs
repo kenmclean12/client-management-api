@@ -13,7 +13,7 @@ public static class UserService
 
     group.MapGet("/", async (AppDbContext db) =>
         {
-          await db.Users.ToListAsync();
+          return await db.Users.ToListAsync();
         }
     );
 
