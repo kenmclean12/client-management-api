@@ -9,7 +9,7 @@ public static class ContactService
 {
   public static async Task MapContactEndPoints(this WebApplication app)
   {
-    var group = app.MapGroup("/contact").WithTags("Contacts");
+    var group = app.MapGroup("/contact").WithTags("Contact");
 
     group.MapGet("/", [Authorize] async (AppDbContext db) =>
       {
