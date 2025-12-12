@@ -31,13 +31,23 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
   options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocal5173", policy =>
+    {
+        policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowLocal5173");
 
 if (app.Environment.IsDevelopment())
 {

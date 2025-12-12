@@ -25,7 +25,6 @@ public class UserCreateDto
   [MaxLength(30)]
   public string LastName { get; set; } = null!;
 
-  [Required]
   public UserRole Role { get; set; } = UserRole.ReadOnly;
 
   [MaxLength(200)]
