@@ -19,6 +19,5 @@ public class UserUpdateDto
 
   public UserRole? Role { get; set; }
 
-  [MaxLength(200)]
   public string? AvatarUrl { get; set; }
 }

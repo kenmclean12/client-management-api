@@ -31,7 +31,6 @@ public class User
   [MaxLength(30)]
   public string LastName { get; set; } = null!;
 
-  [MaxLength(200)]
   public string AvatarUrl { get; set; } = null!;
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime? UpdatedAt { get; set; } = null;
