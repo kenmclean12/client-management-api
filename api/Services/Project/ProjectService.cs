@@ -35,10 +35,14 @@ public static class ProjectService
 
     group.MapGet("/client/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
-        var project = await db.Projects.Where(p => p.ClientId == id).ToListAsync();
-        if (project is null) return Results.NotFound();
+        var projects = await db.Projects
+          .Where(p => p.ClientId == id)
+          .Include(p => p.Jobs)
+          .ToListAsync();
 
-        return Results.Ok(project);
+        if (projects is null) return Results.NotFound();
+
+        return Results.Ok(projects);
       }
     )
     .WithSummary("Find projects by Client ID")
