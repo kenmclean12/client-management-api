@@ -19,7 +19,7 @@ public class Project
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;
 
-    public List<Job> Jobs { get; set; } = new();
+    public List<Job>? Jobs { get; set; }
 
     [Required]
     public DateTime StartDate { get; set; }
