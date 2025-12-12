@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace api.DTOs.Notes;
+namespace api.DTOs.Note;
 
 public class NoteCreateDto
 {

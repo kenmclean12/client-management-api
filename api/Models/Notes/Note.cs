@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using api.DTOs.Notes;
+using api.DTOs.Note;
 using api.Models.Clients;
 
 namespace api.Models.Notes;

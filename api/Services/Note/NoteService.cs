@@ -1,5 +1,5 @@
 using api.Data;
-using api.DTOs.Notes;
+using api.DTOs.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ModelNote = api.Models.Notes.Note;

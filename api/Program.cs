@@ -12,6 +12,7 @@ using api.Services.Job;
 using api.Services.Project;
 using api.Services.Contact;
 using api.Services.Note;
+using api.Services.Request;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");
@@ -67,6 +68,7 @@ app.UseAuthorization();
 await app.MapAuthEndpoints();
 await app.MapUserEndpoints();
 await app.MapClientEndpoints();
+await app.MapRequestEndpoints();
 await app.MapProjectEndpoints();
 await app.MapJobEndpoints();
 await app.MapContactEndPoints();
