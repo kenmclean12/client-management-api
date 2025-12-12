@@ -49,7 +49,6 @@ public class User
       Role = dto.Role,
     };
 
-
     if (dto.AvatarUrl is not null) user.AvatarUrl = dto.AvatarUrl;
     user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
     return user;

@@ -26,7 +26,9 @@ public static class UserService
     group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
-        return user is not null ? Results.Ok(user.ToResponse()) : Results.NotFound();
+        if (user is null) return Results.NotFound();
+
+        return Results.Ok(user.ToResponse());
       }
     )
     .WithSummary("Find a user by ID")
@@ -38,8 +40,10 @@ public static class UserService
     group.MapPost("/", [Authorize] async (UserCreateDto dto, AppDbContext db) =>
       {
         var user = User.Create(dto);
+
         db.Users.Add(user);
         await db.SaveChangesAsync();
+
         return Results.Created($"/user/{user.Id}", user.ToResponse());
       }
     )
@@ -53,8 +57,10 @@ public static class UserService
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
+
         user.Update(dto);
         await db.SaveChangesAsync();
+
         return Results.Ok(user.ToResponse());
       }
     )
@@ -66,19 +72,20 @@ public static class UserService
     .Produces(StatusCodes.Status409Conflict);
 
     group.MapPut("/reset-password/{id:int}", [Authorize] async (AppDbContext db, UserPasswordResetDto dto, int id) =>
-    {
-      var user = await db.Users.FindAsync(id);
-      if (user is null) return Results.NotFound();
+      {
+        var user = await db.Users.FindAsync(id);
+        if (user is null) return Results.NotFound();
 
-      var valid = user.VerifyPassword(dto.Password);
-      if (!valid) return Results.BadRequest("Password invalid");
+        var valid = user.VerifyPassword(dto.Password);
+        if (!valid) return Results.BadRequest("Password invalid");
 
-      user.PasswordHash = User.HashPassword(user, dto.NewPassword);
-      user.UpdatedAt = DateTime.UtcNow;
+        user.PasswordHash = User.HashPassword(user, dto.NewPassword);
+        user.UpdatedAt = DateTime.UtcNow;
 
-      await db.SaveChangesAsync();
-      return Results.Ok(user.ToResponse());
-    })
+        await db.SaveChangesAsync();
+        return Results.Ok(user.ToResponse());
+      }
+    )
     .WithSummary("Reset a users password")
     .WithDescription("Resets a users password and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
@@ -90,8 +97,10 @@ public static class UserService
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
+
         db.Users.Remove(user);
         await db.SaveChangesAsync();
+
         return Results.NoContent();
       }
     )
