@@ -8,7 +8,6 @@
       "applicationUrl": "http://localhost:5048",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_SECRET": "4a164a9654ddf97ac78d4812d564119d41ddb76741f45e7d034eb48cf580b6ec"
       }
     },
     "https": {
@@ -18,7 +17,6 @@
       "applicationUrl": "https://localhost:7248;http://localhost:5048",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_SECRET": "superstrongsecret"
       }
     }
   }

@@ -31,7 +31,7 @@ public class User
   [MaxLength(30)]
   public string LastName { get; set; } = null!;
 
-  public string AvatarUrl { get; set; } = null!;
+  public string? AvatarUrl { get; set; }
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
   public DateTime? UpdatedAt { get; set; } = null;
 
@@ -74,11 +74,10 @@ public class User
       Email = Email,
       Role = Role,
       FirstName = FirstName,
-      LastName = LastName,
-      AvatarUrl = AvatarUrl,
       CreatedAt = CreatedAt,
     };
 
+    if (AvatarUrl is not null) response.AvatarUrl = AvatarUrl;
     if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
 
     return response;
