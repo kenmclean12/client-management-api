@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using api.Data;
+using api.DTOs.User;
 using api.Models.User;
 using api.Services.Token;
 using Microsoft.AspNetCore.Identity;
@@ -17,20 +18,35 @@ public static class AuthService
     {
       var user = await db.Users.FirstOrDefaultAsync((u) => u.Email == req.Email);
       if (user is null) return Results.Unauthorized();
-
-      var hasher = new PasswordHasher<User>();
-      var result = hasher.VerifyHashedPassword(user, user.PasswordHash, req.Password);
-      if (result != PasswordVerificationResult.Success) return Results.Unauthorized();
+      if (!user.VerifyPassword(req.Password))
+        return Results.Unauthorized();
 
       var jwt = tokenService.CreateToken(user);
-      return Results.Ok(new LoginResponse(jwt));
+      return Results.Ok(new TokenResponse(jwt));
     })
     .WithSummary("Login")
     .WithDescription("Verifies user email and password and returns a signed access token")
-    .Produces<LoginResponse>(StatusCodes.Status200OK)
+    .Produces<TokenResponse>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
+
+    group.MapPost("/register", async (UserCreateDto dto, AppDbContext db, TokenService tokenService) =>
+    {
+      var newUser = User.Create(dto);
+      await db.Users.AddAsync(newUser);
+      await db.SaveChangesAsync();
+
+      var user = await db.Users.FindAsync(newUser.Id);
+      if (user is null) return Results.NotFound();
+
+      var jwt = tokenService.CreateToken(user);
+      return Results.Ok(new TokenResponse(jwt));
+    })
+    .WithSummary("Register")
+    .WithDescription("Creates a user and returns a signed access token")
+    .Produces<TokenResponse>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status404NotFound);
   }
 }
 
-public record LoginResponse(string Token);
+public record TokenResponse(string Token);
 public record LoginRequest(string Email, string Password);
