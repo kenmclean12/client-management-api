@@ -28,4 +28,29 @@ public class Project
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+
+    public static Project Create(ProjectCreateDto dto)
+    {
+      var project = new Project
+      {
+          Name = dto.Name,
+          ClientId = dto.ClientId,
+          StartDate = dto.StartDate,
+      };
+
+      if (dto.Description is not null) project.Description = dto.Description;
+      if (dto.EndDate is not null) project.EndDate = dto.EndDate;
+
+      return project;
+    }
+
+    public void Update(ProjectUpdateDto dto)
+    {
+      UpdatedAt = DateTime.UtcNow;
+      if (dto.Name is not null) Name = dto.Name;
+      if (dto.ClientId is int clientId) ClientId = clientId;
+      if (dto.Description is not null) Description = dto.Description;
+      if (dto.StartDate is DateTime startDate) StartDate = startDate;
+      if (dto.EndDate is DateTime endDate) EndDate = endDate;
+    }
 }

@@ -21,7 +21,7 @@ public static class UserService
     )
     .WithSummary("Find all users")
     .WithDescription("Returns all user records")
-    .Produces<UserResponseDto>(StatusCodes.Status200OK);
+    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {

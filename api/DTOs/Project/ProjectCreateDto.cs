@@ -1,0 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+
+public class ProjectCreateDto
+{
+    [Required]
+    [MaxLength(150)]
+    public string Name { get; set; } = null!;
+
+    [MaxLength(2000)]
+    public string? Description { get; set; }
+
+    [Required]
+    public int ClientId { get; set; }
+
+    [Required]
+    public DateTime StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+}

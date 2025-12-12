@@ -18,7 +18,7 @@ public static class JobService
     )
     .WithSummary("Find all jobs")
     .WithDescription("Returns all job records")
-    .Produces<ModelJob>(StatusCodes.Status200OK);
+    .Produces<List<ModelJob>>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {

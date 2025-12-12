@@ -50,7 +50,6 @@ public class Job
       Status = dto.Status,
       Priority = dto.Priority,
       DueDate = dto.DueDate,
-      CreatedAt = DateTime.UtcNow,
     };
 
     if (dto.ProjectId is not null) job.ProjectId = dto.ProjectId;

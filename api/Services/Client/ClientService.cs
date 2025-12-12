@@ -19,7 +19,7 @@ public static class ClientService
     )
     .WithSummary("Find all clients")
     .WithDescription("Returns all client records")
-    .Produces<ClientModel>(StatusCodes.Status200OK);
+    .Produces<List<ClientModel>>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
