@@ -40,7 +40,6 @@ public static class UserService
     group.MapPost("/", [Authorize] async (UserCreateDto dto, AppDbContext db) =>
       {
         var user = ModelUser.Create(dto);
-
         db.Users.Add(user);
         await db.SaveChangesAsync();
 

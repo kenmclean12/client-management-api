@@ -52,16 +52,7 @@ public static class ProjectService
 
     group.MapPost("/", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, ProjectCreateDto dto) =>
       {
-        var project = new ModelProject
-        {
-          Name = dto.Name,
-          ClientId = dto.ClientId,
-          StartDate = dto.StartDate,
-        };
-
-        if (dto.Description is not null) project.Description = dto.Description;
-        if (dto.EndDate is not null) project.EndDate = dto.EndDate;
-
+        var project = ModelProject.Create(dto);
         db.Projects.Add(project);
         await db.SaveChangesAsync();
 

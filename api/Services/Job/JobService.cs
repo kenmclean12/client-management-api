@@ -60,7 +60,8 @@ public static class JobService
     .WithSummary("Update job information")
     .WithDescription("Updates a job and returns the newly created record.")
     .Produces<ModelJob>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status400BadRequest);
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status404NotFound);
 
     group.MapDelete("/{id:int}", [Authorize(Roles = "ADMIN")] async (AppDbContext db, int id) =>
       {

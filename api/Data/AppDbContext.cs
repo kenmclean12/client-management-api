@@ -1,6 +1,7 @@
 ﻿using api.Models.Clients;
 using api.Models.Contacts;
 using api.Models.Jobs;
+using api.Models.Notes;
 using api.Models.Projects;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<Job> Jobs { get; set; } = null!;
     public DbSet<Contact> Contacts { get; set; } = null!;
+
+    public DbSet<Note> Notes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

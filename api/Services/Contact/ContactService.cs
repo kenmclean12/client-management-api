@@ -48,15 +48,7 @@ public static class ContactService
 
     group.MapPost("/", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, ContactCreateDto dto) =>
     {
-      var contact = new ModelContact
-      {
-        Name = dto.Name,
-        Email = dto.Email,
-        ClientId = dto.ClientId,
-      };
-
-      if (dto.Phone is not null) contact.Phone = dto.Phone;
-
+      var contact = ModelContact.Create(dto);
       db.Contacts.Add(contact);
       await db.SaveChangesAsync();
 
