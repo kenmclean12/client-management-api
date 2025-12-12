@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using api.DTOs.Client;
+using api.Models.Projects;
 
 namespace api.Models.Clients;
 
@@ -33,6 +34,8 @@ public class Client
 
     [MaxLength(20)]
     public string? Country { get; set; }
+
+    public List<Project>? Projects { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

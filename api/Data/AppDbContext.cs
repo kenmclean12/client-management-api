@@ -1,4 +1,6 @@
 ﻿using api.Models.Clients;
+using api.Models.Jobs;
+using api.Models.Projects;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,10 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Client> Clients { get; set; } = null!;
+
+    public DbSet<Project> Projects { get; set; } = null!;
+
+    public DbSet<Job> Jobs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
