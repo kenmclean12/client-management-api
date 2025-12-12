@@ -1,18 +1,16 @@
-using System.Threading.Tasks;
 using api.Data;
 using api.DTOs.User;
 using api.Models.User;
 using api.Services.Token;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Endpoints.Auth;
+namespace api.Services.Auth;
 
 public static class AuthService
 {
   public static async Task MapAuthEndpoints(this WebApplication app)
   {
-    var group = app.MapGroup("/auth").WithTags("User");
+    var group = app.MapGroup("/auth").WithTags("Auth");
 
     group.MapPost("/login", async (LoginRequest req, AppDbContext db, TokenService tokenService) =>
     {

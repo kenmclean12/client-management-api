@@ -3,9 +3,8 @@ using api.DTOs.User;
 using api.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
-namespace api.Endpoints.Users;
+namespace api.Services.Users;
 
 public static class UserService
 {

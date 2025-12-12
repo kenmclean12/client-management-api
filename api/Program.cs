@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using api.Data;
-using api.Endpoints.Auth;
-using api.Endpoints.Users;
+using api.Services.Auth;
 using api.Services.Token;
+using api.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");
