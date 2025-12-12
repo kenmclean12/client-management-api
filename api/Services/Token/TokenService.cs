@@ -2,7 +2,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using api.Models.User;
 using Microsoft.IdentityModel.Tokens;
 
 namespace api.Services.Token;
@@ -15,7 +14,7 @@ public class TokenService
         _key = config["JWT_SECRET"]!;
     }
 
-  public string CreateToken(User user)
+  public string CreateToken(Models.Users.User user)
     {
         var claims = new[]
         {

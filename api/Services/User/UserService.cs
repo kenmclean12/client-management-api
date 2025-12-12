@@ -1,10 +1,10 @@
 using api.Data;
 using api.DTOs.User;
-using api.Models.User;
+using ModelUser = api.Models.Users.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Services.Users;
+namespace api.Services.User;
 
 public static class UserService
 {
@@ -39,7 +39,7 @@ public static class UserService
 
     group.MapPost("/", [Authorize] async (UserCreateDto dto, AppDbContext db) =>
       {
-        var user = User.Create(dto);
+        var user = ModelUser.Create(dto);
 
         db.Users.Add(user);
         await db.SaveChangesAsync();
@@ -79,7 +79,7 @@ public static class UserService
         var valid = user.VerifyPassword(dto.Password);
         if (!valid) return Results.BadRequest("Password invalid");
 
-        user.PasswordHash = User.HashPassword(user, dto.NewPassword);
+        user.PasswordHash = ModelUser.HashPassword(user, dto.NewPassword);
         user.UpdatedAt = DateTime.UtcNow;
 
         await db.SaveChangesAsync();

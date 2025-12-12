@@ -1,5 +1,5 @@
-﻿using api.Models.Client;
-using api.Models.User;
+﻿using api.Models.Clients;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data;

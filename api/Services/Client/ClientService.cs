@@ -1,10 +1,10 @@
 using api.Data;
 using api.DTOs.Client;
-using api.Models.Client;
+using ClientModel = api.Models.Clients.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Services.Clients;
+namespace api.Services.Client;
 
 public static class ClientService
 {
@@ -19,7 +19,7 @@ public static class ClientService
     )
     .WithSummary("Find all clients")
     .WithDescription("Returns all client records")
-    .Produces<Client>(StatusCodes.Status200OK);
+    .Produces<ClientModel>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
@@ -30,12 +30,12 @@ public static class ClientService
     )
     .WithSummary("Find all clients")
     .WithDescription("Returns all client records")
-    .Produces<Client>(StatusCodes.Status200OK)
+    .Produces<ClientModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapPost("/", [Authorize(Roles = "ADMIN")] async (AppDbContext db, ClientCreateDto dto) =>
       {
-        var client = Client.Create(dto);
+        var client = ClientModel.Create(dto);
         db.Clients.Add(client);
         await db.SaveChangesAsync();
         return Results.Created($"/client/{client.Id}", client);
@@ -43,7 +43,7 @@ public static class ClientService
     )
     .WithSummary("Create a new client")
     .WithDescription("Creates a client and returns the newly created record.")
-    .Produces<Client>(StatusCodes.Status201Created)
+    .Produces<ClientModel>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
@@ -59,7 +59,7 @@ public static class ClientService
     )
     .WithSummary("Update client information")
     .WithDescription("Updates a client and returns the newly created record.")
-    .Produces<Client>(StatusCodes.Status200OK)
+    .Produces<ClientModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 

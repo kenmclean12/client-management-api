@@ -6,8 +6,8 @@ using System.Text;
 using api.Data;
 using api.Services.Auth;
 using api.Services.Token;
-using api.Services.Users;
-using api.Services.Clients;
+using api.Services.User;
+using api.Services.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");

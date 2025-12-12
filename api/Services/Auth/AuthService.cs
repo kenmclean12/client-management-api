@@ -1,6 +1,6 @@
 using api.Data;
 using api.DTOs.User;
-using api.Models.User;
+using ModelUser = api.Models.Users.User;
 using api.Services.Token;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +29,7 @@ public static class AuthService
 
     group.MapPost("/register", async (UserCreateDto dto, AppDbContext db, TokenService tokenService) =>
     {
-      var newUser = User.Create(dto);
+      var newUser = ModelUser.Create(dto);
       await db.Users.AddAsync(newUser);
       await db.SaveChangesAsync();
 

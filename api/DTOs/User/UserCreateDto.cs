@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using api.Models.User;
+using api.Models.Users;
 
 namespace api.DTOs.User;
 

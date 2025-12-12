@@ -2,7 +2,7 @@ using api.DTOs.User;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace api.Models.User;
+namespace api.Models.Users;
 
 public class User
 {

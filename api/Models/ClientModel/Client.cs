@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using api.DTOs.Client;
 
-namespace api.Models.Client;
+namespace api.Models.Clients;
 
 public class Client
 {
