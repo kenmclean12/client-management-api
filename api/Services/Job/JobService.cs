@@ -38,7 +38,7 @@ public static class JobService
         var job = ModelJob.Create(dto);
         db.Jobs.Add(job);
         await db.SaveChangesAsync();
-        return Results.Ok(job);
+        return Results.Created($"job/{job.Id}", job);
       }
     )
     .WithSummary("Create a new job")

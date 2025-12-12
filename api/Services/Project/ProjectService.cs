@@ -35,15 +35,15 @@ public static class ProjectService
 
     group.MapGet("/client/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
-        var project = await db.Projects.FirstOrDefaultAsync(p => p.ClientId == id);
+        var project = await db.Projects.Where(p => p.ClientId == id).ToListAsync();
         if (project is null) return Results.NotFound();
 
         return Results.Ok(project);
       }
     )
-    .WithSummary("Find a project by Client ID")
-    .WithDescription("Returns a project record for a particular Client")
-    .Produces<ModelProject>(StatusCodes.Status200OK)
+    .WithSummary("Find projects by Client ID")
+    .WithDescription("Returns all projects for a particular Client")
+    .Produces<List<ModelProject>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapPost("/", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, ProjectCreateDto dto) =>
@@ -61,7 +61,7 @@ public static class ProjectService
         db.Projects.Add(project);
         await db.SaveChangesAsync();
 
-        return Results.Ok(project);
+        return Results.Created($"/project/{project.Id}", project);
       }
     )
     .WithSummary("Create a new project")
