@@ -364,3 +364,11 @@
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/obj/Debug/net10.0/api.pdb
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/obj/Debug/net10.0/api.genruntimeconfig.cache
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/obj/Debug/net10.0/ref/api.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.Logging.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll

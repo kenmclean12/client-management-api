@@ -1,10 +1,11 @@
 using api.Data;
-using api.Models.User;
 using api.DTOs.User;
+using api.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace api.Endpoints;
+namespace api.Endpoints.Users;
 
 public static class UserService
 {
@@ -12,7 +13,7 @@ public static class UserService
   {
     var group = app.MapGroup("/user").WithTags("User");
 
-    group.MapGet("/", async (AppDbContext db) =>
+    group.MapGet("/", [Authorize] async (AppDbContext db) =>
         {
           var users = await db.Users.ToListAsync();
           var dtos = users.Select(u => u.ToResponse()).ToList();
@@ -23,7 +24,7 @@ public static class UserService
     .WithDescription("Returns all user records")
     .Produces<UserResponseDto>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
+    group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         return user is not null ? Results.Ok(user.ToResponse()) : Results.NotFound();
@@ -35,7 +36,7 @@ public static class UserService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/", async (UserCreateDto dto, AppDbContext db) =>
+    group.MapPost("/", [Authorize] async (UserCreateDto dto, AppDbContext db) =>
       {
         var user = User.Create(dto);
         db.Users.Add(user);
@@ -49,7 +50,7 @@ public static class UserService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", [Authorize] async (AppDbContext db, UserUpdateDto dto, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -65,7 +66,7 @@ public static class UserService
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPut("/reset-password/{id:int}", async (AppDbContext db, UserPasswordResetDto dto, int id) =>
+    group.MapPut("/reset-password/{id:int}", [Authorize] async (AppDbContext db, UserPasswordResetDto dto, int id) =>
     {
       var user = await db.Users.FindAsync(id);
       if (user is null) return Results.NotFound();
@@ -86,7 +87,7 @@ public static class UserService
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
+    group.MapDelete("/{id:int}", [Authorize(Roles = "Admin")] async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
