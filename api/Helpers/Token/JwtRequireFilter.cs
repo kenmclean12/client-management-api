@@ -18,17 +18,17 @@ public class JwtRequireFilter : IEndpointFilter
     var http = ctx.HttpContext;
     var config = http.RequestServices.GetRequiredService<IConfiguration>();
     var authHeader = http.Request.Headers.Authorization.ToString();
-
-    if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
+    if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer ")) {
       return Results.Unauthorized();
+    }
 
     var token = authHeader["Bearer ".Length..];
     var principal = JwtHelper.Validate(token, config["JWT_SECRET"]!);
-
-    if (principal is null)
+    if (principal is null) {
       return Results.Unauthorized();
-    http.User = principal;
+    }
 
+    http.User = principal;
     if (_requiredRoles.Length > 0)
     {
       var userRoles = principal
