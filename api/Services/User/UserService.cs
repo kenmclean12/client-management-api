@@ -3,6 +3,7 @@ using api.DTOs.User;
 using ModelUser = api.Models.Users.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using api.Helpers.Token;
 
 namespace api.Services.User;
 
@@ -12,18 +13,19 @@ public static class UserService
   {
     var group = app.MapGroup("/user").WithTags("User");
 
-    group.MapGet("/", [Authorize] async (AppDbContext db) =>
+    group.MapGet("/", async (AppDbContext db) =>
         {
           var users = await db.Users.ToListAsync();
           var dtos = users.Select(u => u.ToResponse()).ToList();
           return Results.Ok(dtos);
         }
     )
+    .RequireJwt()
     .WithSummary("Find all users")
     .WithDescription("Returns all user records")
     .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -31,13 +33,14 @@ public static class UserService
         return Results.Ok(user.ToResponse());
       }
     )
+    .RequireJwt()
     .WithSummary("Find a user by ID")
     .WithDescription("Find a user record by ID")
     .Produces<UserResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/", [Authorize] async (UserCreateDto dto, AppDbContext db) =>
+    group.MapPost("/", async (UserCreateDto dto, AppDbContext db) =>
       {
         var user = ModelUser.Create(dto);
         db.Users.Add(user);
@@ -46,13 +49,14 @@ public static class UserService
         return Results.Created($"/user/{user.Id}", user.ToResponse());
       }
     )
+    .RequireJwt()
     .WithSummary("Create a new user")
     .WithDescription("Creates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPut("/{id:int}", [Authorize] async (AppDbContext db, UserUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -63,6 +67,7 @@ public static class UserService
         return Results.Ok(user.ToResponse());
       }
     )
+    .RequireJwt()
     .WithSummary("Update user information")
     .WithDescription("Updates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status200OK)
@@ -70,7 +75,7 @@ public static class UserService
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPut("/reset-password/{id:int}", [Authorize] async (AppDbContext db, UserPasswordResetDto dto, int id) =>
+    group.MapPut("/reset-password/{id:int}", async (AppDbContext db, UserPasswordResetDto dto, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -85,6 +90,7 @@ public static class UserService
         return Results.Ok(user.ToResponse());
       }
     )
+    .RequireJwt()
     .WithSummary("Reset a users password")
     .WithDescription("Resets a users password and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
@@ -92,7 +98,7 @@ public static class UserService
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapDelete("/{id:int}", [Authorize(Roles = "Admin")] async (AppDbContext db, int id) =>
+    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -103,6 +109,7 @@ public static class UserService
         return Results.NoContent();
       }
     )
+    .RequireJwt()
     .WithSummary("Remove a user")
     .WithDescription("Removes a user and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
