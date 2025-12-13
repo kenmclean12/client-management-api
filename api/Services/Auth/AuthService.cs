@@ -20,7 +20,6 @@ public static class AuthService
 
         var jwt = tokenService.CreateToken(user);
 
-
         return Results.Ok(new TokenResponse(jwt, user.ToResponse()));
       }
     )
