@@ -72,7 +72,7 @@ public static class ProjectService
     .Produces<ModelProject>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPatch("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
