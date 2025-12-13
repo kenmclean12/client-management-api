@@ -1,5 +1,5 @@
 using api.Data;
-using Microsoft.AspNetCore.Authorization;
+using api.Helpers.Token;
 using Microsoft.EntityFrameworkCore;
 using ModelJob = api.Models.Jobs.Job;
 
@@ -11,16 +11,17 @@ public static class JobService
   {
     var group = app.MapGroup("/job").WithTags("Job");
 
-    group.MapGet("/", [Authorize] async (AppDbContext db) =>
+    group.MapGet("/", async (AppDbContext db) =>
       {
         return Results.Ok(await db.Jobs.ToListAsync());
       }
     )
+    .RequireJwt()
     .WithSummary("Find all jobs")
     .WithDescription("Returns all job records")
     .Produces<List<ModelJob>>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var job = await db.Jobs.FindAsync(id);
         if (job is null) return Results.NotFound();
@@ -28,12 +29,13 @@ public static class JobService
         return Results.Ok(job);
       }
     )
+    .RequireJwt()
     .WithSummary("Find a job by ID")
     .WithDescription("Returns a job record")
     .Produces<ModelJob>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, JobCreateDto dto) =>
+    group.MapPost("/", async (AppDbContext db, JobCreateDto dto) =>
       {
         var job = ModelJob.Create(dto);
         db.Jobs.Add(job);
@@ -41,12 +43,13 @@ public static class JobService
         return Results.Created($"job/{job.Id}", job);
       }
     )
+    .RequireJwt()
     .WithSummary("Create a new job")
     .WithDescription("Creates a job and returns the newly created record.")
     .Produces<ModelJob>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPut("/{id:int}", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, JobUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (AppDbContext db, JobUpdateDto dto, int id) =>
       {
         var job = await db.Jobs.FindAsync(id);
         if (job is null) return Results.NotFound();
@@ -57,13 +60,14 @@ public static class JobService
         return Results.Ok(job);
       }
     )
+    .RequireJwt()
     .WithSummary("Update job information")
     .WithDescription("Updates a job and returns the newly created record.")
     .Produces<ModelJob>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapDelete("/{id:int}", [Authorize(Roles = "ADMIN")] async (AppDbContext db, int id) =>
+    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var job = await db.Jobs.FindAsync(id);
         if (job is null) return Results.NotFound(id);
@@ -74,6 +78,7 @@ public static class JobService
         return Results.NoContent();
       }
     )
+    .RequireJwt()
     .WithSummary("Remove a job")
     .WithDescription("Removes a job and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

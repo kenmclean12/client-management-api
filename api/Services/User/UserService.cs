@@ -1,7 +1,6 @@
 using api.Data;
 using api.DTOs.User;
 using ModelUser = api.Models.Users.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using api.Helpers.Token;
 

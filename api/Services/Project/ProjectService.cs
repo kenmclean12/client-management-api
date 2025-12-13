@@ -1,5 +1,5 @@
 using api.Data;
-using Microsoft.AspNetCore.Authorization;
+using api.Helpers.Token;
 using Microsoft.EntityFrameworkCore;
 using ModelProject = api.Models.Projects.Project;
 
@@ -11,16 +11,17 @@ public static class ProjectService
   {
     var group = app.MapGroup("/project").WithTags("Project");
 
-    group.MapGet("/", [Authorize] async (AppDbContext db) =>
+    group.MapGet("/", async (AppDbContext db) =>
       {
         return Results.Ok(await db.Projects.Include(p => p.Jobs).ToListAsync());
       }
     )
+    .RequireJwt()
     .WithSummary("Find all projects")
     .WithDescription("Returns all project records")
     .Produces<List<ModelProject>>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
@@ -28,12 +29,13 @@ public static class ProjectService
         return Results.Ok(project);
       }
     )
+    .RequireJwt()
     .WithSummary("Find a project by ID")
     .WithDescription("Returns a project record")
     .Produces<ModelProject>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapGet("/client/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
         var projects = await db.Projects
           .Where(p => p.ClientId == id)
@@ -45,12 +47,13 @@ public static class ProjectService
         return Results.Ok(projects);
       }
     )
+    .RequireJwt()
     .WithSummary("Find projects by Client ID")
     .WithDescription("Returns all projects for a particular Client")
     .Produces<List<ModelProject>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, ProjectCreateDto dto) =>
+    group.MapPost("/", async (AppDbContext db, ProjectCreateDto dto) =>
       {
         var project = ModelProject.Create(dto);
         db.Projects.Add(project);
@@ -59,12 +62,13 @@ public static class ProjectService
         return Results.Created($"/project/{project.Id}", project);
       }
     )
+    .RequireJwt()
     .WithSummary("Create a new project")
     .WithDescription("Creates a project and returns the newly created record.")
     .Produces<ModelProject>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPatch("/{id:int}", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, ProjectUpdateDto dto, int id) =>
+    group.MapPatch("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
@@ -75,12 +79,13 @@ public static class ProjectService
         return Results.Ok(project);
       }
     )
+    .RequireJwt()
     .WithSummary("Update project information")
     .WithDescription("Updates a project and returns the newly created record.")
     .Produces<ModelProject>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapDelete("/{id:int}", [Authorize(Roles = "ADMIN")] async (AppDbContext db, int id) =>
+    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
@@ -91,6 +96,7 @@ public static class ProjectService
         return Results.NoContent();
       }
     )
+    .RequireJwt()
     .WithSummary("Remove a project")
     .WithDescription("Removes a project and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

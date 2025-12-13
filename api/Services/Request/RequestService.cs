@@ -1,6 +1,6 @@
 using api.Data;
 using api.DTOs.Request;
-using Microsoft.AspNetCore.Authorization;
+using api.Helpers.Token;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
 
@@ -12,16 +12,17 @@ public static class RequestService
   {
     var group = app.MapGroup("/request").WithTags("Request");
 
-    group.MapGet("/", [Authorize] async (AppDbContext db) =>
+    group.MapGet("/", async (AppDbContext db) =>
       {
         return Results.Ok(await db.Requests.ToListAsync());
       }
     )
+    .RequireJwt()
     .WithSummary("Find all requests")
     .WithDescription("Returns all request records")
     .Produces<List<RequestModel>>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var request = await db.Requests.FindAsync(id);
         if (request is null) return Results.NotFound();
@@ -29,12 +30,13 @@ public static class RequestService
         return Results.Ok(request);
       }
     )
+    .RequireJwt()
     .WithSummary("Find a request by ID")
     .WithDescription("Returns a request record")
     .Produces<RequestModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapGet("/client/{id:int}", [Authorize] async (AppDbContext db, int id) =>
+    group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
         var requests = await db.Requests
           .Where(r => r.ClientId == id)
@@ -45,12 +47,13 @@ public static class RequestService
         return Results.Ok(requests);
       }
     )
+    .RequireJwt()
     .WithSummary("Find all requests by client")
     .WithDescription("Returns all requests for a specific client")
     .Produces<List<RequestModel>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/", [Authorize] async (AppDbContext db, RequestCreateDto dto) =>
+    group.MapPost("/", async (AppDbContext db, RequestCreateDto dto) =>
       {
         var request = RequestModel.Create(dto);
         db.Requests.Add(request);
@@ -59,12 +62,13 @@ public static class RequestService
         return Results.Created($"/request/{request.Id}", request);
       }
     )
+    .RequireJwt()
     .WithSummary("Create a new request")
     .WithDescription("Creates a request and returns the newly created record.")
     .Produces<RequestModel>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPut("/{id:int}", [Authorize(Roles = "ADMIN,STANDARD")] async (AppDbContext db, RequestUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (AppDbContext db, RequestUpdateDto dto, int id) =>
       {
         var request = await db.Requests.FindAsync(id);
         if (request is null) return Results.NotFound();
@@ -75,13 +79,14 @@ public static class RequestService
         return Results.Ok(request);
       }
     )
+    .RequireJwt()
     .WithSummary("Update request information")
     .WithDescription("Updates a request and returns the updated record.")
     .Produces<RequestModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
-    group.MapDelete("/{id:int}", [Authorize(Roles = "ADMIN")] async (AppDbContext db, int id) =>
+    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var request = await db.Requests.FindAsync(id);
         if (request is null) return Results.NotFound();
@@ -92,6 +97,7 @@ public static class RequestService
         return Results.NoContent();
       }
     )
+    .RequireJwt()
     .WithSummary("Remove a request")
     .WithDescription("Removes a request and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
