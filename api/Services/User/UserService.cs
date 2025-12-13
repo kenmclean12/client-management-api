@@ -3,6 +3,7 @@ using api.DTOs.User;
 using ModelUser = api.Models.Users.User;
 using Microsoft.EntityFrameworkCore;
 using api.Helpers.Token;
+using api.Models.Users;
 
 namespace api.Services.User;
 
@@ -48,7 +49,10 @@ public static class UserService
         return Results.Created($"/user/{user.Id}", user.ToResponse());
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new user")
     .WithDescription("Creates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
@@ -66,7 +70,10 @@ public static class UserService
         return Results.Ok(user.ToResponse());
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update user information")
     .WithDescription("Updates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status200OK)
@@ -89,7 +96,10 @@ public static class UserService
         return Results.Ok(user.ToResponse());
       }
     )
-    .RequireJwt()
+     .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Reset a users password")
     .WithDescription("Resets a users password and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
@@ -108,7 +118,10 @@ public static class UserService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Remove a user")
     .WithDescription("Removes a user and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

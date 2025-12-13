@@ -1,6 +1,7 @@
 using api.Data;
 using api.DTOs.Contacts;
 using api.Helpers.Token;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ModelContact = api.Models.Contacts.Contact;
 namespace api.Services.Contact;
@@ -58,7 +59,10 @@ public static class ContactService
         return Results.Created($"contact/{contact.Id}", contact);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new contact")
     .WithDescription("Creates a contact and returns the newly created record.")
     .Produces<ModelContact>(StatusCodes.Status201Created)
@@ -75,7 +79,10 @@ public static class ContactService
         return Results.Ok(contact);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update contact information")
     .WithDescription("Updates a contact and returns the newly created record.")
     .Produces<ModelContact>(StatusCodes.Status200OK)
@@ -92,7 +99,9 @@ public static class ContactService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
     .WithSummary("Remove a contact")
     .WithDescription("Removes a contact and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

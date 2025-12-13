@@ -1,5 +1,6 @@
 using api.Data;
 using api.Helpers.Token;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ModelProject = api.Models.Projects.Project;
 
@@ -62,7 +63,10 @@ public static class ProjectService
         return Results.Created($"/project/{project.Id}", project);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new project")
     .WithDescription("Creates a project and returns the newly created record.")
     .Produces<ModelProject>(StatusCodes.Status201Created)
@@ -79,7 +83,10 @@ public static class ProjectService
         return Results.Ok(project);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update project information")
     .WithDescription("Updates a project and returns the newly created record.")
     .Produces<ModelProject>(StatusCodes.Status200OK)
@@ -96,7 +103,9 @@ public static class ProjectService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
     .WithSummary("Remove a project")
     .WithDescription("Removes a project and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

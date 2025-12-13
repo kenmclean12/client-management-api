@@ -1,6 +1,7 @@
 using api.Data;
 using api.DTOs.Request;
 using api.Helpers.Token;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
 
@@ -62,7 +63,10 @@ public static class RequestService
         return Results.Created($"/request/{request.Id}", request);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new request")
     .WithDescription("Creates a request and returns the newly created record.")
     .Produces<RequestModel>(StatusCodes.Status201Created)
@@ -79,7 +83,10 @@ public static class RequestService
         return Results.Ok(request);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update request information")
     .WithDescription("Updates a request and returns the updated record.")
     .Produces<RequestModel>(StatusCodes.Status200OK)
@@ -97,7 +104,9 @@ public static class RequestService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
     .WithSummary("Remove a request")
     .WithDescription("Removes a request and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

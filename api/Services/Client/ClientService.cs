@@ -3,6 +3,7 @@ using api.DTOs.Client;
 using ClientModel = api.Models.Clients.Client;
 using Microsoft.EntityFrameworkCore;
 using api.Helpers.Token;
+using api.Models.Users;
 
 namespace api.Services.Client;
 
@@ -43,7 +44,10 @@ public static class ClientService
         return Results.Created($"/client/{client.Id}", client);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new client")
     .WithDescription("Creates a client and returns the newly created record.")
     .Produces<ClientModel>(StatusCodes.Status201Created)
@@ -60,7 +64,10 @@ public static class ClientService
         return Results.Ok(client);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update client information")
     .WithDescription("Updates a client and returns the newly created record.")
     .Produces<ClientModel>(StatusCodes.Status200OK)
@@ -78,7 +85,9 @@ public static class ClientService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
     .WithSummary("Remove a client")
     .WithDescription("Removes a client and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

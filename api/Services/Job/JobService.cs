@@ -1,5 +1,6 @@
 using api.Data;
 using api.Helpers.Token;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ModelJob = api.Models.Jobs.Job;
 
@@ -43,7 +44,10 @@ public static class JobService
         return Results.Created($"job/{job.Id}", job);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new job")
     .WithDescription("Creates a job and returns the newly created record.")
     .Produces<ModelJob>(StatusCodes.Status201Created)
@@ -60,7 +64,10 @@ public static class JobService
         return Results.Ok(job);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update job information")
     .WithDescription("Updates a job and returns the newly created record.")
     .Produces<ModelJob>(StatusCodes.Status200OK)
@@ -78,7 +85,9 @@ public static class JobService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
     .WithSummary("Remove a job")
     .WithDescription("Removes a job and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)

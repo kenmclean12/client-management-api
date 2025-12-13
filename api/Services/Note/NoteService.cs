@@ -1,6 +1,7 @@
 using api.Data;
 using api.DTOs.Note;
 using api.Helpers.Token;
+using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ModelNote = api.Models.Notes.Note;
 
@@ -44,7 +45,10 @@ public static class NoteService
         return Results.Created($"/note/{note.Id}", note);
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Create a new note")
     .WithDescription("Creates a note and returns the newly created record.")
     .Produces<ModelNote>(StatusCodes.Status201Created)
@@ -61,7 +65,10 @@ public static class NoteService
         return Results.Ok(note);
       }
     )
-    .RequireJwt()
+   .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Update a note by ID")
     .WithDescription("Updates a note and returns the newly created record.")
     .Produces<ModelNote>(StatusCodes.Status200OK)
@@ -79,7 +86,10 @@ public static class NoteService
         return Results.NoContent();
       }
     )
-    .RequireJwt()
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
     .WithSummary("Delete a note by ID")
     .WithDescription("Delete a note and returns the newly created record.")
     .Produces<ModelNote>(StatusCodes.Status200OK)
