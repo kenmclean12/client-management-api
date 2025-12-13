@@ -17,7 +17,6 @@ public class JwtRequireFilter : IEndpointFilter
   {
     var http = ctx.HttpContext;
     var config = http.RequestServices.GetRequiredService<IConfiguration>();
-
     var authHeader = http.Request.Headers.Authorization.ToString();
 
     if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
