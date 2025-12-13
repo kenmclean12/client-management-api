@@ -13,15 +13,17 @@ public static class AuthService
     var group = app.MapGroup("/auth").WithTags("Auth");
 
     group.MapPost("/login", async (LoginRequest req, AppDbContext db, TokenService tokenService) =>
-    {
-      var user = await db.Users.FirstOrDefaultAsync((u) => u.Email == req.Email);
-      if (user is null) return Results.Unauthorized();
-      if (!user.VerifyPassword(req.Password))
-        return Results.Unauthorized();
+      {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
+        if (user is null || !user.VerifyPassword(req.Password))
+          return Results.Unauthorized();
 
-      var jwt = tokenService.CreateToken(user);
-      return Results.Ok(new TokenResponse(jwt));
-    })
+        var jwt = tokenService.CreateToken(user);
+
+
+        return Results.Ok(new TokenResponse(jwt, user.ToResponse()));
+      }
+    )
     .WithSummary("Login")
     .WithDescription("Verifies user email and password and returns a signed access token")
     .Produces<TokenResponse>(StatusCodes.Status200OK)
@@ -37,7 +39,7 @@ public static class AuthService
       if (user is null) return Results.NotFound();
 
       var jwt = tokenService.CreateToken(user);
-      return Results.Ok(new TokenResponse(jwt));
+      return Results.Ok(new TokenResponse(jwt, user.ToResponse()));
     })
     .WithSummary("Register")
     .WithDescription("Creates a user and returns a signed access token")
@@ -46,5 +48,5 @@ public static class AuthService
   }
 }
 
-public record TokenResponse(string Token);
+public record TokenResponse(string Token, UserResponseDto User);
 public record LoginRequest(string Email, string Password);
