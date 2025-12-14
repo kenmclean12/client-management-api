@@ -4,6 +4,7 @@ using ModelUser = api.Models.Users.User;
 using Microsoft.EntityFrameworkCore;
 using api.Helpers.Token;
 using api.Models.Users;
+using System.Security.Claims;
 
 namespace api.Services.User;
 
@@ -59,15 +60,21 @@ public static class UserService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPost("/invite-user", async (AppDbContext db, UserInviteCreateDto dto) =>
+    group.MapPost("/invite-user", async (AppDbContext db, UserInviteCreateDto dto, ClaimsPrincipal user) =>
       {
-        var existingInvite = await db.UserInvites.FirstOrDefaultAsync(i => i.Email == dto.Email);
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var existingInvite = await db.UserInvites.FirstOrDefaultAsync(i => i.Email == email);
         if (existingInvite is not null) return Results.Conflict();
 
-        var invite = UserInvite.Create(dto);
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !int.TryParse(userId, out var userIdInt))
+        {
+          return Results.Unauthorized();
+        }
+
+        var invite = UserInvite.Create(email, userIdInt);
         db.UserInvites.Add(invite);
         await db.SaveChangesAsync();
-
         return Results.Created($"/user/invite-user/{invite.Id}", invite);
       }
     )

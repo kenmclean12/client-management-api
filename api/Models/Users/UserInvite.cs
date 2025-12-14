@@ -13,16 +13,16 @@ public class UserInvite
   public string Email { get; set; } = null!;
 
   [Required]
-  public string UserId { get; set; } = null!;
+  public int UserId { get; set; }
 
   public DateTime ExpiryDate { get; set; } = DateTime.UtcNow.AddDays(7);
 
-  public static UserInvite Create(UserInviteCreateDto dto)
+  public static UserInvite Create(string Email, int UserId)
   {
     return new UserInvite
     {
-      Email = dto.Email,
-      UserId = dto.UserId,
+      Email = Email,
+      UserId = UserId,
     };
   }
 }
