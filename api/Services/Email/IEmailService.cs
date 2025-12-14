@@ -2,7 +2,7 @@ namespace api.Services.Email;
 
 public interface IEmailService
 {
-    Task SendUserInviteAync(
+    Task SendUserInviteAsync(
       string toEmail,
       string inviteLink,
       CancellationToken token = default

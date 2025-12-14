@@ -13,6 +13,7 @@ using api.Services.Project;
 using api.Services.Contact;
 using api.Services.Note;
 using api.Services.Request;
+using api.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");
@@ -31,6 +32,7 @@ builder.Services
         };
     });
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();

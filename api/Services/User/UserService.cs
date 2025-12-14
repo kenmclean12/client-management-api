@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Helpers.Token;
 using api.Models.Users;
 using System.Security.Claims;
+using api.Services.Email;
 
 namespace api.Services.User;
 
@@ -60,33 +61,49 @@ public static class UserService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
-    group.MapPost("/invite-user", async (AppDbContext db, UserInviteCreateDto dto, ClaimsPrincipal user) =>
-      {
-        var email = dto.Email.Trim().ToLowerInvariant();
-        var existingInvite = await db.UserInvites.FirstOrDefaultAsync(i => i.Email == email);
-        if (existingInvite is not null) return Results.Conflict();
+    group.MapPost("/invite-user",
+      async (
+        AppDbContext db,
+        UserInviteCreateDto dto,
+        ClaimsPrincipal user,
+        IEmailService emailService,
+        IConfiguration config,
+        CancellationToken token
+      ) =>
+    {
+      var email = dto.Email.Trim().ToLowerInvariant();
 
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId is null || !int.TryParse(userId, out var userIdInt))
-        {
-          return Results.Unauthorized();
-        }
+      if (await db.UserInvites.AnyAsync(i => i.Email == email, token))
+        return Results.Conflict();
 
-        var invite = UserInvite.Create(email, userIdInt);
-        db.UserInvites.Add(invite);
-        await db.SaveChangesAsync();
-        return Results.Created($"/user/invite-user/{invite.Id}", invite);
-      }
-    )
-    .RequireJwt(
-      nameof(UserRole.Admin),
-      nameof(UserRole.Standard)
-    )
-    .WithSummary("Create a user invite for a particular email address")
-    .WithDescription("Creates a user invite and returns the newly created record.")
-    .Produces<UserInvite>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest)
-    .Produces(StatusCodes.Status409Conflict);
+      var userId = int.Parse(
+        user.FindFirstValue(ClaimTypes.NameIdentifier)!
+      );
+
+      var invite = UserInvite.Create(email, userId);
+      db.UserInvites.Add(invite);
+      await db.SaveChangesAsync(token);
+
+      var inviteLink =
+        $"{config["App:FrontendUrl"]}/register?invite={invite.Token}";
+
+      await emailService.SendUserInviteAsync(
+        email,
+        inviteLink,
+        token
+      );
+
+      return Results.Created($"/user/invite-user/{invite.Id}", invite);
+    })
+   .RequireJwt(
+     nameof(UserRole.Admin),
+     nameof(UserRole.Standard)
+   )
+   .WithSummary("Create a user invite for a particular email address")
+   .WithDescription("Creates a user invite and returns the newly created record.")
+   .Produces<UserInvite>(StatusCodes.Status201Created)
+   .Produces(StatusCodes.Status400BadRequest)
+   .Produces(StatusCodes.Status409Conflict);
 
     group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
       {
