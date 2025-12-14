@@ -59,6 +59,28 @@ public static class UserService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
+    group.MapPost("/invite-user", async (AppDbContext db, UserInviteCreateDto dto) =>
+      {
+        var existingInvite = await db.UserInvites.FirstOrDefaultAsync(i => i.Email == dto.Email);
+        if (existingInvite is not null) return Results.Conflict();
+
+        var invite = UserInvite.Create(dto);
+        db.UserInvites.Add(invite);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/user/invite-user/{invite.Id}", invite);
+      }
+    )
+    .RequireJwt(
+      nameof(UserRole.Admin),
+      nameof(UserRole.Standard)
+    )
+    .WithSummary("Create a user invite for a particular email address")
+    .WithDescription("Creates a user invite and returns the newly created record.")
+    .Produces<UserInvite>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status409Conflict);
+
     group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
       {
         var user = await db.Users.FindAsync(id);
