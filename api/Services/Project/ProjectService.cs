@@ -79,13 +79,13 @@ public static class ProjectService
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
-
         project.Update(dto);
+        await db.SaveChangesAsync(token);
 
         if (dto.ProjectStatus is not null && dto.ProjectStatus == ProjectStatus.Done)
         {
           project.EndDate = DateTime.UtcNow;
-          var contacts = await db.Contacts.Where(c => c.ClientId == project.ClientId).ToListAsync();
+          var contacts = await db.Contacts.Where(c => c.ClientId == project.ClientId).ToListAsync(token);
           foreach (var contact in contacts)
           {
             await emailService.SendProjectFinishedAsync(
@@ -99,8 +99,6 @@ public static class ProjectService
             );
           }
         }
-
-        await db.SaveChangesAsync();
 
         return Results.Ok(project.ToResponse());
       }
