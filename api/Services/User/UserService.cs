@@ -51,10 +51,6 @@ public static class UserService
         return Results.Created($"/user/{user.Id}", user.ToResponse());
       }
     )
-    .RequireJwt(
-      nameof(UserRole.Admin),
-      nameof(UserRole.Standard)
-    )
     .WithSummary("Create a new user")
     .WithDescription("Creates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status201Created)
