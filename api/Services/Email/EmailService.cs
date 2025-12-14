@@ -55,6 +55,51 @@ public class EmailService : IEmailService
         await client.DisconnectAsync(true, token);
     }
 
+    public async Task SendProjectFinishedAsync(string toEmail, string taskName, string taskDescription, DateTime taskDueDate, DateTime taskFinishDate, CancellationToken token = default)
+    {
+        var message = new MimeMessage();
+        message.From.Add(
+          new MailboxAddress(
+            _config["Email:FromName"],
+            _config["Email:FromAddress"]
+          )
+        );
+
+        message.To.Add(MailboxAddress.Parse(toEmail));
+        message.Subject = $"Job Completed: {taskName}";
+
+        var html = await LoadTemplateAsync("ProjectComplete.html");
+        html = html
+          .Replace("{{TaskName}}", taskName)
+          .Replace("{{TaskDescription}}", taskDescription)
+          .Replace("{{TaskDueDate}}", taskDueDate.ToString("MMMM d, yyyy"))
+          .Replace("{{TaskFinishDate}}", taskFinishDate.ToString("f"))
+          .Replace("{{AppFrontendUrl}}", _config["App:FrontendUrl"])
+          .Replace("{{AppName}}", _config["App:Name"]);
+
+        message.Body = new BodyBuilder
+        {
+            HtmlBody = html
+        }.ToMessageBody();
+
+        using var client = new SmtpClient();
+        await client.ConnectAsync(
+          _config["Email:SmtpHost"],
+          int.Parse(_config["Email:SmtpPort"]!),
+          SecureSocketOptions.StartTls,
+          token
+        );
+
+        await client.AuthenticateAsync(
+          _config["Email:Username"],
+          Environment.GetEnvironmentVariable("SENDGRID_API_KEY"),
+          token
+        );
+
+        await client.SendAsync(message, token);
+        await client.DisconnectAsync(true, token);
+    }
+
     public static async Task<string> LoadTemplateAsync(string name)
     {
         var path = Path.Combine(

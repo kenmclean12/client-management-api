@@ -2,6 +2,7 @@ using api.Data;
 using api.Helpers.Token;
 using api.Models.Projects;
 using api.Models.Users;
+using api.Services.Email;
 using Microsoft.EntityFrameworkCore;
 using ModelProject = api.Models.Projects.Project;
 
@@ -81,6 +82,15 @@ public static class ProjectService
 
         project.Update(dto);
         await db.SaveChangesAsync();
+
+        // if (dto.ProjectStatus is not null && dto.ProjectStatus == ProjectStatus.Done)
+        // {
+        //    await EmailService.SendUserInviteAsync(
+        //     email,
+        //     inviteLink,
+        //     token
+        //   );
+        // }
 
         return Results.Ok(project.ToResponse());
       }

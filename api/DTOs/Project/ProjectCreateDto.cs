@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.Models.Projects;
 
 public class ProjectCreateDto
 {
@@ -16,4 +17,10 @@ public class ProjectCreateDto
     public DateTime StartDate { get; set; }
 
     public DateTime? EndDate { get; set; }
+
+    [Required]
+    public RequestPriority ProjectPriority { get; set; } = RequestPriority.Low;
+
+    [Required]
+    public ProjectStatus ProjectStatus { get; set; } = ProjectStatus.Pending;
 }

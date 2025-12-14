@@ -26,50 +26,62 @@ public class Project
 
     public DateTime? EndDate { get; set; }
 
+    [Required]
+    public RequestPriority ProjectPriority { get; set; } = RequestPriority.Low;
+
+    [Required]
+    public ProjectStatus ProjectStatus { get; set; } = ProjectStatus.Pending;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
     public static Project Create(ProjectCreateDto dto)
     {
-      var project = new Project
-      {
-          Name = dto.Name,
-          ClientId = dto.ClientId,
-          StartDate = dto.StartDate,
-      };
+        var project = new Project
+        {
+            Name = dto.Name,
+            ClientId = dto.ClientId,
+            StartDate = dto.StartDate,
+            ProjectPriority = dto.ProjectPriority,
+            ProjectStatus = dto.ProjectStatus,
+        };
 
-      if (dto.Description is not null) project.Description = dto.Description;
-      if (dto.EndDate is not null) project.EndDate = dto.EndDate;
+        if (dto.Description is not null) project.Description = dto.Description;
+        if (dto.EndDate is not null) project.EndDate = dto.EndDate;
 
-      return project;
+        return project;
     }
 
     public void Update(ProjectUpdateDto dto)
     {
-      UpdatedAt = DateTime.UtcNow;
-      if (dto.Name is not null) Name = dto.Name;
-      if (dto.ClientId is int clientId) ClientId = clientId;
-      if (dto.Description is not null) Description = dto.Description;
-      if (dto.StartDate is DateTime startDate) StartDate = startDate;
-      if (dto.EndDate is DateTime endDate) EndDate = endDate;
+        UpdatedAt = DateTime.UtcNow;
+        if (dto.Name is not null) Name = dto.Name;
+        if (dto.ClientId is int clientId) ClientId = clientId;
+        if (dto.Description is not null) Description = dto.Description;
+        if (dto.StartDate is DateTime startDate) StartDate = startDate;
+        if (dto.EndDate is DateTime endDate) EndDate = endDate;
+        if (dto.ProjectPriority is RequestPriority projectPriority) ProjectPriority = projectPriority;
+        if (dto.ProjectStatus is ProjectStatus projectStatus) ProjectStatus = projectStatus;
     }
 
     public ProjectResponseDto ToResponse()
     {
-      var response = new ProjectResponseDto
-      {
-          Name = Name,
-          ClientId = ClientId,
-          Client = Client,
-          StartDate = StartDate,
-          CreatedAt = CreatedAt,
-      };
+        var response = new ProjectResponseDto
+        {
+            Name = Name,
+            ClientId = ClientId,
+            Client = Client,
+            StartDate = StartDate,
+            CreatedAt = CreatedAt,
+            ProjectPriority = ProjectPriority,
+            ProjectStatus = ProjectStatus,
+        };
 
-      if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
-      if (Description is not null) response.Description = Description;
-      if (EndDate is not null) response.EndDate = EndDate;
-      if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
+        if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
+        if (Description is not null) response.Description = Description;
+        if (EndDate is not null) response.EndDate = EndDate;
+        if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
 
-      return response;
+        return response;
     }
 }

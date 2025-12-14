@@ -29,4 +29,10 @@ public class ProjectResponseDto
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+
+    [Required]
+    public RequestPriority ProjectPriority { get; set; } = RequestPriority.Low;
+
+    [Required]
+    public ProjectStatus ProjectStatus { get; set; } = ProjectStatus.Pending;
 }
