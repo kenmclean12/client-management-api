@@ -85,7 +85,7 @@ public static class UserService
       await db.SaveChangesAsync(token);
 
       var inviteLink =
-        $"{config["App:FrontendUrl"]}/register?invite={invite.Token}";
+        $"{config["App:FrontendUrl"]}/register?invite={invite.Token}&email={email}";
 
       await emailService.SendUserInviteAsync(
         email,
