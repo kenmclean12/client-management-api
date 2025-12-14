@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.DTOs.Jobs;
 using api.Models.Clients;
 using api.Models.Projects;
 
@@ -28,7 +29,8 @@ public class Job
   [Required]
   public DateTime DueDate { get; set; }
 
-  public int? ProjectId { get; set; }
+  [Required]
+  public int ProjectId { get; set; }
 
   public Project? Project { get; set; }
 
@@ -50,9 +52,9 @@ public class Job
       Status = dto.Status,
       Priority = dto.Priority,
       DueDate = dto.DueDate,
+      ProjectId = dto.ProjectId,
     };
 
-    if (dto.ProjectId is not null) job.ProjectId = dto.ProjectId;
     if (dto.EstimatedFinish is not null) job.EstimatedFinish = dto.EstimatedFinish;
 
     return job;
@@ -71,5 +73,27 @@ public class Job
     if (dto.DueDate is DateTime dueDate) DueDate = dueDate;
     if (dto.EstimatedFinish is DateTime estimatedFinish) EstimatedFinish = estimatedFinish;
     if (dto.CompletedAt is DateTime completedAt) CompletedAt = completedAt;
+  }
+
+  public JobResponseDto ToResponse()
+  {
+    var response = new JobResponseDto
+    {
+      Name = Name,
+      Description = Description,
+      ClientId = ClientId,
+      Client = Client,
+      Status = Status,
+      Priority = Priority,
+      DueDate = DueDate,
+      ProjectId = ProjectId,
+      CreatedAt = CreatedAt,
+    };
+
+    if (EstimatedFinish is not null) response.EstimatedFinish = EstimatedFinish;
+    if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
+    if (CompletedAt is not null) response.CompletedAt = CompletedAt;
+
+    return response;
   }
 }

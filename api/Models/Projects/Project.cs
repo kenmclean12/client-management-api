@@ -65,7 +65,7 @@ public class Project
           CreatedAt = CreatedAt,
       };
 
-      if (Jobs is not null) response.Jobs = Jobs;
+      if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
       if (Description is not null) response.Description = Description;
       if (EndDate is not null) response.EndDate = EndDate;
       if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;

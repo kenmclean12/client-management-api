@@ -21,7 +21,8 @@ public class JobCreateDto
     [Required]
     public DateTime DueDate { get; set; }
 
-    public int? ProjectId { get; set; }
+    [Required]
+    public int ProjectId { get; set; }
 
     public DateTime? EstimatedFinish { get; set; }
 }
