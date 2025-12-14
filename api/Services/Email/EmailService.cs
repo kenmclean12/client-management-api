@@ -47,7 +47,7 @@ public class EmailService : IEmailService
 
         await client.AuthenticateAsync(
           _config["Email:Username"],
-          _config["Email:Password"],
+          Environment.GetEnvironmentVariable("SENDGRID_API_KEY"),
           token
         );
 

@@ -375,3 +375,5 @@
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/BouncyCastle.Cryptography.dll
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/MailKit.dll
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/MimeKit.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/SendGrid.dll
+/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/StarkbankEcdsa.dll
