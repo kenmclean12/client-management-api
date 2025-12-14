@@ -228,7 +228,6 @@
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/BuildHost-netcore/zh-Hans/System.CommandLine.resources.dll
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/BuildHost-netcore/zh-Hant/System.CommandLine.resources.dll
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/appsettings.Development.json
-/Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/appsettings.json
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/api.staticwebassets.endpoints.json
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/api
 /Users/kenmclean/Desktop/resume-development/client-management-api/api/bin/Debug/net10.0/api.deps.json
