@@ -53,4 +53,23 @@ public class Project
       if (dto.StartDate is DateTime startDate) StartDate = startDate;
       if (dto.EndDate is DateTime endDate) EndDate = endDate;
     }
+
+    public ProjectResponseDto ToResponse()
+    {
+      var response = new ProjectResponseDto
+      {
+          Name = Name,
+          ClientId = ClientId,
+          Client = Client,
+          StartDate = StartDate,
+          CreatedAt = CreatedAt,
+      };
+
+      if (Jobs is not null) response.Jobs = Jobs;
+      if (Description is not null) response.Description = Description;
+      if (EndDate is not null) response.EndDate = EndDate;
+      if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
+
+      return response;
+    }
 }
