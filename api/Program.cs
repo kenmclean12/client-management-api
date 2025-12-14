@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
   options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))
 );
+builder.Services.AddHostedService<UserInviteCleanupService>();
 
 builder.Services.AddCors(options =>
 {
