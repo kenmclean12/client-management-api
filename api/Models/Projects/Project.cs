@@ -24,6 +24,8 @@ public class Project
     [Required]
     public DateTime StartDate { get; set; }
 
+    public DateTime? DueDate { get; set; }
+
     public DateTime? EndDate { get; set; }
 
     [Required]
@@ -48,6 +50,7 @@ public class Project
 
         if (dto.Description is not null) project.Description = dto.Description;
         if (dto.EndDate is not null) project.EndDate = dto.EndDate;
+        if (dto.DueDate is not null) project.DueDate = dto.DueDate;
 
         return project;
     }
@@ -59,6 +62,7 @@ public class Project
         if (dto.ClientId is int clientId) ClientId = clientId;
         if (dto.Description is not null) Description = dto.Description;
         if (dto.StartDate is DateTime startDate) StartDate = startDate;
+        if (dto.DueDate is DateTime dueDate) DueDate = dueDate;
         if (dto.EndDate is DateTime endDate) EndDate = endDate;
         if (dto.ProjectPriority is RequestPriority projectPriority) ProjectPriority = projectPriority;
         if (dto.ProjectStatus is ProjectStatus projectStatus) ProjectStatus = projectStatus;
@@ -79,6 +83,7 @@ public class Project
 
         if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
         if (Description is not null) response.Description = Description;
+        if (DueDate is not null) response.DueDate = DueDate;
         if (EndDate is not null) response.EndDate = EndDate;
         if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
 

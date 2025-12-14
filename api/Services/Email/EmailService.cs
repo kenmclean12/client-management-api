@@ -55,7 +55,7 @@ public class EmailService : IEmailService
         await client.DisconnectAsync(true, token);
     }
 
-    public async Task SendProjectFinishedAsync(string toEmail, string taskName, string taskDescription, DateTime taskDueDate, DateTime taskFinishDate, CancellationToken token = default)
+    public async Task SendProjectFinishedAsync(string toEmail, string taskName, string taskDescription, DateTime taskStartDate, DateTime? taskDueDate, DateTime? taskFinishDate, CancellationToken token = default)
     {
         var message = new MimeMessage();
         message.From.Add(
@@ -69,11 +69,14 @@ public class EmailService : IEmailService
         message.Subject = $"Job Completed: {taskName}";
 
         var html = await LoadTemplateAsync("ProjectComplete.html");
+        var dueDate = taskDueDate.HasValue ? taskDueDate.Value.ToString("MMMM d, yyyy") : "n/a";
+        var finishDate = taskFinishDate.HasValue ? taskFinishDate.Value.ToString("MMMM d, yyyy") : "n/a";
         html = html
           .Replace("{{TaskName}}", taskName)
           .Replace("{{TaskDescription}}", taskDescription)
-          .Replace("{{TaskDueDate}}", taskDueDate.ToString("MMMM d, yyyy"))
-          .Replace("{{TaskFinishDate}}", taskFinishDate.ToString("f"))
+          .Replace("{{TaskStartDate}}", taskStartDate.ToString("MMMM d, yyyy"))
+          .Replace("{{TaskDueDate}}", dueDate)
+          .Replace("{{TaskFinishDate}}", finishDate)
           .Replace("{{AppFrontendUrl}}", _config["App:FrontendUrl"])
           .Replace("{{AppName}}", _config["App:Name"]);
 

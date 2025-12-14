@@ -12,8 +12,9 @@ public interface IEmailService
       string toEmail,
       string taskName,
       string taskDescription,
-      DateTime taskDueDate,
-      DateTime taskFinishDate,
+      DateTime taskStartDate,
+      DateTime? taskDueDate,
+      DateTime? taskFinishDate,
       CancellationToken token = default
     );
 }

@@ -16,6 +16,8 @@ public class ProjectCreateDto
     [Required]
     public DateTime StartDate { get; set; }
 
+    public DateTime? DueDate { get; set; }
+
     public DateTime? EndDate { get; set; }
 
     [Required]

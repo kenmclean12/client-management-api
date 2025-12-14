@@ -75,22 +75,32 @@ public static class ProjectService
     .Produces<ProjectResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPut("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id, CancellationToken token, IEmailService emailService) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
 
         project.Update(dto);
-        await db.SaveChangesAsync();
 
-        // if (dto.ProjectStatus is not null && dto.ProjectStatus == ProjectStatus.Done)
-        // {
-        //    await EmailService.SendUserInviteAsync(
-        //     email,
-        //     inviteLink,
-        //     token
-        //   );
-        // }
+        if (dto.ProjectStatus is not null && dto.ProjectStatus == ProjectStatus.Done)
+        {
+          project.EndDate = DateTime.UtcNow;
+          var contacts = await db.Contacts.Where(c => c.ClientId == project.ClientId).ToListAsync();
+          foreach (var contact in contacts)
+          {
+            await emailService.SendProjectFinishedAsync(
+              contact.Email,
+              project.Name,
+              project.Description ?? "n/a",
+              project.StartDate,
+              project.DueDate,
+              project.EndDate,
+              token
+            );
+          }
+        }
+
+        await db.SaveChangesAsync();
 
         return Results.Ok(project.ToResponse());
       }

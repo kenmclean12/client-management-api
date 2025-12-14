@@ -25,6 +25,8 @@ public class ProjectResponseDto
     [Required]
     public DateTime StartDate { get; set; }
 
+    public DateTime? DueDate { get; set; }
+
     public DateTime? EndDate { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
