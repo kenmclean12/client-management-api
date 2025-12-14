@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using api.DTOs.Jobs;
+using api.DTOs.User;
 using api.Models.Clients;
 using api.Models.Jobs;
 
@@ -19,6 +20,10 @@ public class ProjectResponseDto
     [Required]
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;
+
+    [Required]
+    public int AssignedUserId { get; set; }
+    public UserResponseDto AssignedUser { get; set; } = null!;
 
     public List<JobResponseDto>? Jobs { get; set; }
 

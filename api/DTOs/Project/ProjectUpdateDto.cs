@@ -11,6 +11,8 @@ public class ProjectUpdateDto
 
     public int? ClientId { get; set; }
 
+    public int? AssignedUserId { get; set; }
+
     public DateTime? StartDate { get; set; }
 
      public DateTime? DueDate { get; set; }

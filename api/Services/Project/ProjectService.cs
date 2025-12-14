@@ -16,7 +16,7 @@ public static class ProjectService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        var projects = await db.Projects.Include(p => p.Jobs).ToListAsync();
+        var projects = await db.Projects.Include(p => p.Jobs).Include(p => p.AssignedUser).ToListAsync();
         var activeProjects = projects.Where((p) => p.EndDate == null);
         var response = activeProjects.Select(p => p.ToResponse());
         return Results.Ok(response);
@@ -46,6 +46,7 @@ public static class ProjectService
           .Where(p => p.ClientId == id)
           .Where(p => p.EndDate == null)
           .Include(p => p.Jobs)
+          .Include(p => p.AssignedUser)
           .ToListAsync();
 
         if (projects is null) return Results.NotFound();

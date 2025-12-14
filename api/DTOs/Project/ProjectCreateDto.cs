@@ -14,6 +14,9 @@ public class ProjectCreateDto
     public int ClientId { get; set; }
 
     [Required]
+    public int AssignedUserId { get; set; }
+
+    [Required]
     public DateTime StartDate { get; set; }
 
     public DateTime? DueDate { get; set; }

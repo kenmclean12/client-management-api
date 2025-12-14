@@ -11,6 +11,8 @@ public class JobUpdateDto
 
     public int? ClientId { get; set; }
 
+    public int? AssignedUserId { get; set; }
+
     public int? ProjectId { get; set; }
 
     public JobStatus? Status { get; set; }

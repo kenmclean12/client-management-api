@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using api.Models.Clients;
 using api.Models.Jobs;
+using api.Models.Users;
 
 namespace api.Models.Projects;
 
@@ -18,6 +19,10 @@ public class Project
     [Required]
     public int ClientId { get; set; }
     public Client Client { get; set; } = null!;
+
+    [Required]
+    public int AssignedUserId { get; set; }
+    public User AssignedUser { get; set; } = null!;
 
     public List<Job>? Jobs { get; set; }
 
@@ -43,6 +48,7 @@ public class Project
         {
             Name = dto.Name,
             ClientId = dto.ClientId,
+            AssignedUserId = dto.AssignedUserId,
             StartDate = dto.StartDate,
             ProjectPriority = dto.ProjectPriority,
             ProjectStatus = dto.ProjectStatus,
@@ -60,6 +66,7 @@ public class Project
         UpdatedAt = DateTime.UtcNow;
         if (dto.Name is not null) Name = dto.Name;
         if (dto.ClientId is int clientId) ClientId = clientId;
+        if (dto.AssignedUserId is int assignedUserId) AssignedUserId = assignedUserId;
         if (dto.Description is not null) Description = dto.Description;
         if (dto.StartDate is DateTime startDate) StartDate = startDate;
         if (dto.DueDate is DateTime dueDate) DueDate = dueDate;
@@ -75,6 +82,8 @@ public class Project
             Name = Name,
             ClientId = ClientId,
             Client = Client,
+            AssignedUserId = AssignedUserId,
+            AssignedUser = AssignedUser.ToResponse(),
             StartDate = StartDate,
             CreatedAt = CreatedAt,
             ProjectPriority = ProjectPriority,

@@ -14,6 +14,8 @@ public class JobCreateDto
     [Required]
     public int ClientId { get; set; }
 
+    public int? AssignedUserId { get; set; }
+
     public JobStatus Status { get; set; } = JobStatus.Stopped;
 
     public JobPriority Priority { get; set; } = JobPriority.Low;

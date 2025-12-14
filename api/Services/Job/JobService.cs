@@ -14,7 +14,7 @@ public static class JobService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        return Results.Ok(await db.Jobs.ToListAsync());
+        return Results.Ok(await db.Jobs.Include(j => j.Client).Include(j => j.AssignedUser).ToListAsync());
       }
     )
     .RequireJwt()
