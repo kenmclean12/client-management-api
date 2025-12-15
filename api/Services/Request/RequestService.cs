@@ -104,7 +104,6 @@ public static class RequestService
         }
 
         await db.SaveChangesAsync();
-
         return Results.Ok(request);
       }
     )

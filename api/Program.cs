@@ -14,6 +14,7 @@ using api.Services.Contact;
 using api.Services.Note;
 using api.Services.Request;
 using api.Services.Email;
+using api.Services.InboundEmail;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");
@@ -63,12 +64,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.Use(async (ctx, next) =>
+{
+    if (ctx.Request.Path.StartsWithSegments("/email/inbound"))
+    {
+        if (!ctx.Request.Headers.TryGetValue("X-Twilio-Email-Event-Webhook-Signature", out _))
+            ctx.Response.StatusCode = 401;
+        return;
+    }
 
+    await next();
+});
+
+
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 await app.MapAuthEndpoints();
+await app.MapInboundEmailEndpoints();
 await app.MapUserEndpoints();
 await app.MapClientEndpoints();
 await app.MapRequestEndpoints();
