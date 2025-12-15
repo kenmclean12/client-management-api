@@ -69,10 +69,6 @@ public static class ProjectService
         return Results.Created($"/project/{project.Id}", project.ToResponse());
       }
     )
-    .RequireJwt(
-      nameof(UserRole.Admin),
-      nameof(UserRole.Standard)
-    )
     .WithSummary("Create a new project")
     .WithDescription("Creates a project and returns the newly created record.")
     .Produces<ProjectResponseDto>(StatusCodes.Status201Created)
