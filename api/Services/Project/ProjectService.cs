@@ -16,10 +16,13 @@ public static class ProjectService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        var projects = await db.Projects.Include(p => p.Jobs).Include(p => p.AssignedUser).ToListAsync();
-        var activeProjects = projects.Where((p) => p.EndDate == null);
-        var response = activeProjects.Select(p => p.ToResponse());
-        return Results.Ok(response);
+        return Results.Ok(await db.Projects
+          .Include(p => p.Jobs)
+          .Include(p => p.AssignedUser)
+          .Where((p) => p.EndDate == null)
+          .Select(p => p.ToResponse())
+          .ToListAsync()
+        );
       }
     )
     .RequireJwt()
@@ -58,10 +61,10 @@ public static class ProjectService
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
         var projects = await db.Projects
-          .Where(p => p.ClientId == id)
-          .Where(p => p.EndDate == null)
           .Include(p => p.Jobs)
           .Include(p => p.AssignedUser)
+          .Where(p => p.ClientId == id)
+          .Where(p => p.EndDate == null)
           .ToListAsync();
 
         if (projects is null) return Results.NotFound();
