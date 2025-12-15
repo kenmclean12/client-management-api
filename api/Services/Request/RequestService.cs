@@ -88,7 +88,9 @@ public static class RequestService
             Name = request.Title,
             Description = request.Description,
             ClientId = request.ClientId,
-            AssignedUserId = request.AssignedUserId ?? throw new Exception("AssignedUserId required"),
+            AssignedUserId =
+              dto.AssignedUserId
+              ?? throw new Exception("AssignedUserId required to Create Project from Request"),
             StartDate = DateTime.UtcNow,
             DueDate = dto.DueDate,
             ProjectPriority = request.Priority,
@@ -96,10 +98,7 @@ public static class RequestService
           };
 
           var project = ProjectModel.Create(projectDto);
-
           db.Projects.Add(project);
-          await db.SaveChangesAsync();
-
           request.ProjectId = project.Id;
           request.ReviewedAt = DateTime.UtcNow;
         }
