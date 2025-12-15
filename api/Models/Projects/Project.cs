@@ -70,7 +70,6 @@ public class Project
         if (dto.Description is not null) Description = dto.Description;
         if (dto.StartDate is DateTime startDate) StartDate = startDate;
         if (dto.DueDate is DateTime dueDate) DueDate = dueDate;
-        if (dto.EndDate is DateTime endDate) EndDate = endDate;
         if (dto.ProjectPriority is RequestPriority projectPriority) ProjectPriority = projectPriority;
         if (dto.ProjectStatus is ProjectStatus projectStatus) ProjectStatus = projectStatus;
     }

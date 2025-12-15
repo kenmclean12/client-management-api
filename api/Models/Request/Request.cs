@@ -24,8 +24,8 @@ public class Request
 
     public RequestPriority Priority { get; set; } = RequestPriority.Normal;
 
+    public int? AssignedUserId { get; set; }
     public int? ProjectId { get; set; }
-    public int? JobId { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ReviewedAt { get; set; }
@@ -42,7 +42,6 @@ public class Request
         };
 
         if (dto.ProjectId is int projectId) request.ProjectId = projectId;
-        if (dto.JobId is not null) request.JobId = dto.JobId;
 
         return request;
     }
@@ -54,8 +53,8 @@ public class Request
         if (dto.ClientId is int clientId) ClientId = clientId;
         if (dto.Status is RequestStatus status) Status = status;
         if (dto.Priority is RequestPriority priority) Priority = priority;
+        if (dto.AssignedUserId is int userId) AssignedUserId = userId;
         if (dto.ProjectId is int projectId) ProjectId = projectId;
-        if (dto.JobId is int jobId) JobId = jobId;
         if (dto.ReviewedAt is DateTime reviewedAt) ReviewedAt = reviewedAt;
     }
 }

@@ -18,6 +18,4 @@ public class RequestCreateDto
     public RequestPriority Priority { get; set; } = RequestPriority.Normal;
 
     public int? ProjectId { get; set; }
-
-    public int? JobId { get; set; }
 }

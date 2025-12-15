@@ -14,11 +14,13 @@ public class RequestUpdateDto
 
     public RequestStatus? Status { get; set; }
 
+    public DateTime? DueDate { get; set; }
+
     public RequestPriority? Priority { get; set; }
 
-    public int? ProjectId { get; set; }
+    public int? AssignedUserId { get; set; }
 
-    public int? JobId { get; set; }
+    public int? ProjectId { get; set; }
 
     public DateTime? ReviewedAt { get; set; }
 }

@@ -23,8 +23,8 @@ public static class ClientService
       }
     )
     .RequireJwt()
-    .WithSummary("Find all clients")
-    .WithDescription("Returns all client records")
+    .WithSummary("Find all active clients")
+    .WithDescription("Returns all active client records")
     .Produces<List<ClientModel>>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>

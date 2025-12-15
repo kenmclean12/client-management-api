@@ -17,8 +17,6 @@ public class ProjectUpdateDto
 
      public DateTime? DueDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
-
     public RequestPriority? ProjectPriority { get; set; }
 
     [Required]

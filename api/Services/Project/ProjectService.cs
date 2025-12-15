@@ -20,6 +20,7 @@ public static class ProjectService
           .Include(p => p.Jobs)
           .Include(p => p.AssignedUser)
           .Where((p) => p.EndDate == null)
+          .Where(p => p.ProjectStatus != ProjectStatus.Done)
           .Select(p => p.ToResponse())
           .ToListAsync()
         );
@@ -97,7 +98,6 @@ public static class ProjectService
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
         project.Update(dto);
-        await db.SaveChangesAsync(token);
 
         if (dto.ProjectStatus is not null && dto.ProjectStatus == ProjectStatus.Done)
         {
@@ -117,6 +117,7 @@ public static class ProjectService
           }
         }
 
+        await db.SaveChangesAsync(token);
         return Results.Ok(project.ToResponse());
       }
     )

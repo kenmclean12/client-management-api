@@ -4,7 +4,8 @@ using api.Helpers.Token;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
-
+using ProjectModel = api.Models.Projects.Project;
+using api.Models.Projects;
 namespace api.Services.Request;
 
 public static class RequestService
@@ -77,8 +78,32 @@ public static class RequestService
       {
         var request = await db.Requests.FindAsync(id);
         if (request is null) return Results.NotFound();
-
         request.Update(dto);
+
+        var isNowApproved = request.Status == RequestStatus.Approved;
+        if (isNowApproved)
+        {
+          var projectDto = new ProjectCreateDto
+          {
+            Name = request.Title,
+            Description = request.Description,
+            ClientId = request.ClientId,
+            AssignedUserId = request.AssignedUserId ?? throw new Exception("AssignedUserId required"),
+            StartDate = DateTime.UtcNow,
+            DueDate = dto.DueDate,
+            ProjectPriority = request.Priority,
+            ProjectStatus = ProjectStatus.Pending
+          };
+
+          var project = ProjectModel.Create(projectDto);
+
+          db.Projects.Add(project);
+          await db.SaveChangesAsync();
+
+          request.ProjectId = project.Id;
+          request.ReviewedAt = DateTime.UtcNow;
+        }
+
         await db.SaveChangesAsync();
 
         return Results.Ok(request);
