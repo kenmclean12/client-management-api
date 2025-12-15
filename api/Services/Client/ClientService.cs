@@ -15,7 +15,11 @@ public static class ClientService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        return Results.Ok(await db.Clients.ToListAsync());
+        return Results.Ok(
+          await db.Clients
+            .Where(c => c.SoftDeleted == false)
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
