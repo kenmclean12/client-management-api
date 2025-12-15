@@ -14,7 +14,12 @@ public static class JobService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        return Results.Ok(await db.Jobs.Include(j => j.Client).Include(j => j.AssignedUser).ToListAsync());
+        return Results.Ok(
+          await db.Jobs
+            .Include(j => j.Client)
+            .Include(j => j.AssignedUser)
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
@@ -35,6 +40,20 @@ public static class JobService
     .WithDescription("Returns a job record")
     .Produces<ModelJob>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
+
+    group.MapGet("/user/{id:int}", async (AppDbContext db, int id) =>
+      {
+        return Results.Ok(
+          await db.Jobs
+          .Where(j => j.AssignedUserId == id)
+          .ToListAsync()
+        );
+      }
+    )
+    .RequireJwt()
+    .WithSummary("Find assigned jobs by User ID")
+    .WithDescription("Returns job records assigned to a particular user")
+    .Produces<List<ModelJob>>(StatusCodes.Status200OK);
 
     group.MapPost("/", async (AppDbContext db, JobCreateDto dto) =>
       {

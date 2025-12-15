@@ -40,6 +40,21 @@ public static class ProjectService
     .Produces<ProjectResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
+    group.MapGet("/user/{id:int}", async (AppDbContext db, int id) =>
+      {
+        return Results.Ok(
+          await db.Projects
+            .Where(p => p.AssignedUserId == id)
+            .Select(p => p.ToResponse())
+            .ToListAsync()
+        );
+      }
+    )
+    .RequireJwt()
+    .WithSummary("Find assigned Projects by User ID")
+    .WithDescription("Returns assigned projects for a particular user")
+    .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK);
+
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
         var projects = await db.Projects

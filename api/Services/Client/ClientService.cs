@@ -31,11 +31,12 @@ public static class ClientService
       }
     )
     .RequireJwt()
-    .WithSummary("Find all clients")
-    .WithDescription("Returns all client records")
+    .WithSummary("Find client by id")
+    .WithDescription("Returns a client record")
     .Produces<ClientModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
-
+    
+    //TO BE REMOVED/DEV ONLY
     group.MapPost("/", async (AppDbContext db, ClientCreateDto dto) =>
       {
         var client = ClientModel.Create(dto);
@@ -94,6 +95,7 @@ public static class ClientService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
+    //TO BE REMOVED/DEV ONLY
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var client = await db.Clients.FindAsync(id);
@@ -104,9 +106,6 @@ public static class ClientService
 
         return Results.NoContent();
       }
-    )
-    .RequireJwt(
-      nameof(UserRole.Admin)
     )
     .WithSummary("Remove a client")
     .WithDescription("Removes a client and returns a 204 Response on success.")
