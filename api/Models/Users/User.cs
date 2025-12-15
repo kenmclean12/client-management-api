@@ -74,6 +74,7 @@ public class User
       Email = Email,
       Role = Role,
       FirstName = FirstName,
+      LastName = LastName,
       CreatedAt = CreatedAt,
     };
 
