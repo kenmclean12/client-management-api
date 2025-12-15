@@ -41,6 +41,8 @@ public class Client
 
     public DateTime? UpdatedAt { get; set; }
 
+    public bool SoftDeleted { get; set; } = false;
+
     public static Client Create(ClientCreateDto dto)
     {
         return new Client
@@ -69,8 +71,4 @@ public class Client
 
         UpdatedAt = DateTime.UtcNow;
     }
-
-    //To be implemented:
-    //     public ICollection<Job>? Jobs { get; set; }
-    // public ICollection<Contact>? Contacts { get; set; }
 }

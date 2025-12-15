@@ -74,6 +74,26 @@ public static class ClientService
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
+    group.MapPut("/soft-delete/{id:int}", async (AppDbContext db, int id) =>
+      {
+        var client = await db.Clients.FindAsync(id);
+        if (client is null) return Results.NotFound();
+
+        client.SoftDeleted = true;
+        await db.SaveChangesAsync();
+
+        return Results.Ok(client);
+      }
+    )
+    .RequireJwt(
+      nameof(UserRole.Admin)
+    )
+    .WithSummary("Soft Delete a client")
+    .WithDescription("Soft Deletes a client and returns a 204 Response on success.")
+    .Produces<ClientModel>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status404NotFound);
+
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
         var client = await db.Clients.FindAsync(id);

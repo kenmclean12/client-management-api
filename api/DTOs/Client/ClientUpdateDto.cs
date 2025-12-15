@@ -28,4 +28,6 @@ public class ClientUpdateDto
 
     [MaxLength(20)]
     public string? Country { get; set; }
+
+    public bool? SoftDeleted { get; set; }
 }
