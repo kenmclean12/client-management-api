@@ -23,7 +23,6 @@ public static class InboundEmailService
           ? "(No message body)"
           : form["text"].ToString();
 
-
       var fromEmail = from.Trim().ToLowerInvariant();
       var contact = await db.Contacts.FirstOrDefaultAsync(c => fromEmail.Contains(c.Email.ToLower()));
       if (contact is null) return Results.BadRequest("Unknown contact");
@@ -48,6 +47,10 @@ public static class InboundEmailService
       return Results.Ok();
     })
     .AllowAnonymous()
-    .WithTags("Inbound Email");
+    .WithTags("Inbound Email")
+    .WithSummary("Receive inbound email from clients")
+    .WithDescription("Processes incoming emails from clients and creates a new request automatically.")
+    .Produces<RequestModel>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status400BadRequest);
   }
 }
