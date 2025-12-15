@@ -79,6 +79,7 @@ public static class ProjectService
     .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
+  //To be removed/DEV only
     group.MapPost("/", async (AppDbContext db, ProjectCreateDto dto) =>
       {
         var project = ModelProject.Create(dto);

@@ -10,4 +10,8 @@ public class NoteCreateDto
 
     [Required]
     public int ClientId { get; set; }
+
+    public int? ProjectId { get; set; }
+
+    public int? JobId { get; set; }
 }

@@ -25,17 +25,48 @@ public static class NoteService
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
-        var notes = await db.Notes.Where(n => n.ClientId == id).ToListAsync();
-        if (notes.Count == 0) return Results.NotFound();
-
-        return Results.Ok(notes);
+        return Results.Ok(
+          await db.Notes
+            .Where(n => n.ClientId == id)
+            .Where(n => n.ProjectId == null)
+            .Where(n => n.JobId == null)
+            .ToListAsync()
+          );
       }
     )
     .RequireJwt()
-    .WithSummary("Find all notes")
+    .WithSummary("Find all notes for a particular client")
     .WithDescription("Returns all note records for a particular client")
     .Produces<List<ModelNote>>(StatusCodes.Status200OK)
     .Produces<List<ModelNote>>(StatusCodes.Status404NotFound);
+
+    group.MapGet("/project/{id:int}", async (AppDbContext db, int id) =>
+      {
+        return Results.Ok(
+          await db.Notes
+            .Where(n => n.ProjectId == id)
+            .ToListAsync()
+        );
+      }
+    )
+    .RequireJwt()
+    .WithSummary("Find all notes for a particular project")
+    .WithDescription("Returns all note records for a particular project")
+    .Produces<List<ModelNote>>(StatusCodes.Status200OK);
+
+    group.MapGet("/job/{id:int}", async (AppDbContext db, int id) =>
+      {
+        return Results.Ok(
+          await db.Notes
+            .Where(n => n.JobId == id)
+            .ToListAsync()
+        );
+      }
+    )
+    .RequireJwt()
+    .WithSummary("Find all notes for a particular project")
+    .WithDescription("Returns all note records for a particular project")
+    .Produces<List<ModelNote>>(StatusCodes.Status200OK);
 
     group.MapPost("/", async (AppDbContext db, NoteCreateDto dto) =>
       {
