@@ -95,6 +95,7 @@ public static class RequestService
 
           var project = ProjectModel.Create(projectDto);
           db.Projects.Add(project);
+          await db.SaveChangesAsync();
           request.ProjectId = project.Id;
           request.ReviewedAt = DateTime.UtcNow;
         }

@@ -78,6 +78,7 @@ public class Project
     {
         var response = new ProjectResponseDto
         {
+            Id = Id,
             Name = Name,
             ClientId = ClientId,
             Client = Client,
