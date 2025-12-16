@@ -83,7 +83,7 @@ public static class NoteService
         var note = ModelNote.Create(dto);
         db.Notes.Add(note);
         await db.SaveChangesAsync();
-        return Results.Created($"/note/{note.Id}", note.ToResponse());
+        return Results.Created($"/note/{note.Id}", note);
       }
     )
     .RequireJwt(
@@ -92,7 +92,7 @@ public static class NoteService
     )
     .WithSummary("Create a new note")
     .WithDescription("Creates a note and returns the newly created record.")
-    .Produces<NoteResponseDto>(StatusCodes.Status201Created)
+    .Produces<ModelNote>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
     group.MapPut("/{id:int}", async (AppDbContext db, NoteUpdateDto dto, int id) =>
@@ -103,7 +103,7 @@ public static class NoteService
         note.Update(dto);
         await db.SaveChangesAsync();
 
-        return Results.Ok(note.ToResponse());
+        return Results.Ok(note);
       }
     )
    .RequireJwt(
@@ -112,7 +112,7 @@ public static class NoteService
     )
     .WithSummary("Update a note by ID")
     .WithDescription("Updates a note and returns the newly created record.")
-    .Produces<NoteResponseDto>(StatusCodes.Status200OK)
+    .Produces<ModelNote>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
 
