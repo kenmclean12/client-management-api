@@ -92,8 +92,8 @@ public class Project
 
         if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
         if (Description is not null) response.Description = Description;
-        if (DueDate is not null) response.DueDate = DueDate;
-        if (EndDate is not null) response.EndDate = EndDate;
+        if (DueDate is DateTime dueDate) response.DueDate = dueDate;
+        if (EndDate is DateTime endDate) response.EndDate = endDate;
         if (UpdatedAt is not null) response.UpdatedAt = UpdatedAt;
 
         return response;

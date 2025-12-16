@@ -18,6 +18,7 @@ public static class ProjectService
       {
         return Results.Ok(await db.Projects
           .Include(p => p.Jobs)
+          .Include(p => p.Client)
           .Include(p => p.AssignedUser)
           .Where((p) => p.EndDate == null)
           .Where(p => p.ProjectStatus != ProjectStatus.Done)
@@ -35,6 +36,7 @@ public static class ProjectService
       {
         var project = await db.Projects
           .Include((p) => p.AssignedUser)
+          .Include(p => p.Client)
           .Where(p => p.Id == id)
           .FirstOrDefaultAsync();
 
@@ -54,6 +56,7 @@ public static class ProjectService
           await db.Projects
             .Where(p => p.AssignedUserId == id)
             .Include((p) => p.AssignedUser)
+            .Include(p => p.Client)
             .Select(p => p.ToResponse())
             .ToListAsync()
         );
@@ -69,6 +72,7 @@ public static class ProjectService
         var projects = await db.Projects
           .Include(p => p.Jobs)
           .Include(p => p.AssignedUser)
+          .Include(p => p.Client)
           .Where(p => p.ClientId == id)
           .Where(p => p.EndDate == null)
           .ToListAsync();
