@@ -27,6 +27,21 @@ public static class UserService
     .WithDescription("Returns all user records")
     .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
 
+    group.MapGet("/admin", async (AppDbContext db) =>
+        {
+          var users = await db.Users
+            .Where(u => u.Role == UserRole.Admin)
+            .ToListAsync();
+
+          var dtos = users.Select(u => u.ToResponse()).ToList();
+          return Results.Ok(dtos);
+        }
+    )
+    .RequireJwt()
+    .WithSummary("Find all admin users")
+    .WithDescription("Returns all admin user records")
+    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
+
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var user = await db.Users.FindAsync(id);
