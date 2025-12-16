@@ -49,6 +49,7 @@ public static class ProjectService
         return Results.Ok(
           await db.Projects
             .Where(p => p.AssignedUserId == id)
+            .Include((p) => p.AssignedUser)
             .Select(p => p.ToResponse())
             .ToListAsync()
         );
