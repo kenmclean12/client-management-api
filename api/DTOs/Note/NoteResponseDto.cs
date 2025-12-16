@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using api.DTOs.User;
 
-namespace api.DTOs.Note;
-
-public class NoteCreateDto
+public class NoteResponseDto
 {
+    public int Id { get; set; }
+
     [Required]
     [MaxLength(1000)]
     public string Content { get; set; } = null!;
@@ -14,7 +15,12 @@ public class NoteCreateDto
     [Required]
     public int UserId { get; set; }
 
+    public UserResponseDto User { get; set; } = null!;
+
     public int? ProjectId { get; set; }
 
     public int? JobId { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }
