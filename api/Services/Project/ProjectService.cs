@@ -86,7 +86,7 @@ public static class ProjectService
         db.Projects.Add(project);
         await db.SaveChangesAsync();
 
-        return Results.Created($"/project/{project.Id}", project.ToResponse());
+        return Results.Created($"/project/{project.Id}", project);
       }
     )
     .WithSummary("Create a new project")

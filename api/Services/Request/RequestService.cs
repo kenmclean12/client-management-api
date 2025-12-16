@@ -65,10 +65,6 @@ public static class RequestService
         return Results.Created($"/request/{request.Id}", request);
       }
     )
-    .RequireJwt(
-      nameof(UserRole.Admin),
-      nameof(UserRole.Standard)
-    )
     .WithSummary("Create a new request")
     .WithDescription("Creates a request and returns the newly created record.")
     .Produces<RequestModel>(StatusCodes.Status201Created)

@@ -31,7 +31,7 @@ public class Request
 
     public static Request Create(RequestCreateDto dto)
     {
-        var request = new Request
+        return new Request
         {
             Title = dto.Title,
             Description = dto.Description,
@@ -39,10 +39,6 @@ public class Request
             Priority = dto.Priority,
             CreatedAt = DateTime.UtcNow
         };
-
-        if (dto.ProjectId is int projectId) request.ProjectId = projectId;
-
-        return request;
     }
 
     public void Update(RequestUpdateDto dto)

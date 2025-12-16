@@ -16,6 +16,4 @@ public class RequestCreateDto
     public int ClientId { get; set; }
 
     public RequestPriority Priority { get; set; } = RequestPriority.Normal;
-
-    public int? ProjectId { get; set; }
 }
