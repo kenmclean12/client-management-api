@@ -15,9 +15,9 @@ public class Note
     [Required]
     public int ClientId { get; set; }
 
+    [Required]
     public int UserId { get; set; }
 
-    [Required]
     public User User { get; set; } = null!;
 
     public int? ProjectId { get; set; }
