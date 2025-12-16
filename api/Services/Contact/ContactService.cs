@@ -38,10 +38,11 @@ public static class ContactService
 
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
-        var contacts = await db.Contacts.Where(c => c.ClientId == id).ToListAsync();
-        if (contacts.Count == 0) return Results.NotFound();
-
-        return Results.Ok(contacts);
+        return Results.Ok(
+          await db.Contacts
+            .Where(c => c.ClientId == id)
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
