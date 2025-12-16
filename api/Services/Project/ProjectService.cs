@@ -33,7 +33,11 @@ public static class ProjectService
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
-        var project = await db.Projects.FindAsync(id);
+        var project = await db.Projects
+          .Include((p) => p.AssignedUser)
+          .Where(p => p.Id == id)
+          .FirstOrDefaultAsync();
+
         if (project is null) return Results.NotFound();
         return Results.Ok(project.ToResponse());
       }
@@ -80,7 +84,7 @@ public static class ProjectService
     .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
 
-  //To be removed/DEV only
+    //To be removed/DEV only
     group.MapPost("/", async (AppDbContext db, ProjectCreateDto dto) =>
       {
         var project = ModelProject.Create(dto);
@@ -92,7 +96,7 @@ public static class ProjectService
     )
     .WithSummary("Create a new project")
     .WithDescription("Creates a project and returns the newly created record.")
-    .Produces<ProjectResponseDto>(StatusCodes.Status201Created)
+    .Produces<ModelProject>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
     group.MapPut("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id, CancellationToken token, IEmailService emailService) =>
@@ -120,7 +124,7 @@ public static class ProjectService
         }
 
         await db.SaveChangesAsync(token);
-        return Results.Ok(project.ToResponse());
+        return Results.Ok(project);
       }
     )
     .RequireJwt(
@@ -129,7 +133,7 @@ public static class ProjectService
     )
     .WithSummary("Update project information")
     .WithDescription("Updates a project and returns the newly created record.")
-    .Produces<ProjectResponseDto>(StatusCodes.Status200OK)
+    .Produces<ModelProject>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
