@@ -86,6 +86,7 @@ public class Job
   {
     var response = new JobResponseDto
     {
+      Id = Id,
       Name = Name,
       Description = Description,
       ClientId = ClientId,
