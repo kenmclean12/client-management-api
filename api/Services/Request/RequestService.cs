@@ -16,7 +16,10 @@ public static class RequestService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        var requests = await db.Requests.Where(r => r.Status != RequestStatus.Approved).ToListAsync();
+        var requests = await db.Requests
+          .Include(r => r.Client)
+          .Where(r => r.Status != RequestStatus.Approved)
+          .ToListAsync();
         return Results.Ok(requests);
       }
     )
@@ -44,6 +47,7 @@ public static class RequestService
         var requests = await db.Requests
           .Where(r => r.ClientId == id)
           .Where(r => r.Status != RequestStatus.Approved)
+          .Include(r => r.Client)
           .ToListAsync();
 
         if (requests.Count == 0) return Results.NotFound();
