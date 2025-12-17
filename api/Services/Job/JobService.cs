@@ -45,6 +45,8 @@ public static class JobService
       {
         return Results.Ok(
           await db.Jobs
+           .Include(j => j.Client)
+            .Include(j => j.AssignedUser)
           .Where(j => j.AssignedUserId == id)
           .ToListAsync()
         );
