@@ -25,7 +25,7 @@ public static class NoteService
     )
     .RequireJwt()
     .WithSummary("Find all notes")
-    .WithDescription("Returns all contact records")
+    .WithDescription("Returns all note records")
     .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 
@@ -89,12 +89,10 @@ public static class NoteService
         await db.SaveChangesAsync();
 
         var savedNote = await db.Notes
-           .Where(n => n.Id == note.Id)
-            .Include(n => n.User)
-            .Select(n => n.ToResponse())
-            .ToListAsync();
+          .Include(n => n.User)
+          .FirstOrDefaultAsync(n => n.Id == note.Id);
 
-        return Results.Created($"/note/{note.Id}", savedNote);
+        return Results.Created($"/note/{note.Id}", savedNote!.ToResponse());
       }
     )
     .RequireJwt(
@@ -117,12 +115,10 @@ public static class NoteService
         await db.SaveChangesAsync();
 
         var savedNote = await db.Notes
-          .Where(n => n.Id == note.Id)
           .Include(n => n.User)
-          .Select(n => n.ToResponse())
-          .SingleAsync();
+          .FirstOrDefaultAsync(n => n.Id == note.Id);
 
-        return Results.Ok(savedNote);
+        return Results.Ok(savedNote!.ToResponse());
       }
     )
    .RequireJwt(

@@ -21,6 +21,7 @@ public static class RequestService
           await db.Requests
             .Include(r => r.Client)
             .Where(r => r.Status != RequestStatus.Approved)
+            .Select(r => r.ToResponse())
             .ToListAsync()
         );
       }
@@ -28,7 +29,7 @@ public static class RequestService
     .RequireJwt()
     .WithSummary("Find all requests")
     .WithDescription("Returns all request records")
-    .Produces<List<RequestModel>>(StatusCodes.Status200OK)
+    .Produces<List<RequestResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
@@ -39,13 +40,13 @@ public static class RequestService
 
         if (request is null) return Results.NotFound();
 
-        return Results.Ok(request);
+        return Results.Ok(request.ToResponse());
       }
     )
     .RequireJwt()
     .WithSummary("Find a request by ID")
     .WithDescription("Returns a request record")
-    .Produces<RequestModel>(StatusCodes.Status200OK)
+    .Produces<RequestResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
@@ -56,6 +57,7 @@ public static class RequestService
             .Where(r => r.ClientId == id)
             .Where(r => r.Status != RequestStatus.Approved)
             .Include(r => r.Client)
+            .Select(r => r.ToResponse())
             .ToListAsync()
         );
       }
@@ -63,7 +65,7 @@ public static class RequestService
     .RequireJwt()
     .WithSummary("Find all requests by client")
     .WithDescription("Returns all requests for a specific client")
-    .Produces<List<RequestModel>>(StatusCodes.Status200OK)
+    .Produces<List<RequestResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapPut("/{id:int}", async (AppDbContext db, RequestUpdateDto dto, int id) =>
@@ -79,7 +81,7 @@ public static class RequestService
         if (!isNowApproved)
         {
           await db.SaveChangesAsync();
-          
+
           return Results.Ok(request);
         }
 
@@ -107,7 +109,12 @@ public static class RequestService
         request.ProjectId = project.Id;
         request.ReviewedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
-        return Results.Ok(request);
+
+        var savedRequest = await db.Requests
+          .Include(r => r.Client)
+          .FirstOrDefaultAsync(r => r.Id == request.Id);
+
+        return Results.Ok(request.ToResponse());
       }
     )
     .RequireJwt(
@@ -116,7 +123,7 @@ public static class RequestService
     )
     .WithSummary("Update request information")
     .WithDescription("Updates a request and returns the updated record.")
-    .Produces<RequestModel>(StatusCodes.Status200OK)
+    .Produces<RequestResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status403Forbidden)
