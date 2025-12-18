@@ -1,4 +1,5 @@
 using api.Data;
+using api.Models.Request;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
 

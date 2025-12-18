@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using api.DTOs.User;
 using System.Security.Cryptography;
 
 namespace api.Models.Users;

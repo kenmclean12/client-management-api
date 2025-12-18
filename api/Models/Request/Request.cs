@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using api.DTOs.Request;
 using api.Models.Clients;
+using api.Models.Request;
 
 namespace api.Models.Requests;
 
@@ -46,8 +47,8 @@ public class Request
         if (dto.Title is not null) Title = dto.Title;
         if (dto.Description is not null) Description = dto.Description;
         if (dto.ClientId is int clientId) ClientId = clientId;
-        if (dto.Status is RequestStatus status) Status = status;
-        if (dto.Priority is RequestPriority priority) Priority = priority;
+        if (dto.Status is RequestStatus requestStatus) Status = requestStatus;
+        if (dto.Priority is RequestPriority requestPriority) Priority = requestPriority;
         if (dto.ProjectId is int projectId) ProjectId = projectId;
         if (dto.ReviewedAt is DateTime reviewedAt) ReviewedAt = reviewedAt;
     }

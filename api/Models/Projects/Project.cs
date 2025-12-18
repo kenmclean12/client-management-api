@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using api.Models.Clients;
 using api.Models.Jobs;
+using api.Models.Request;
 using api.Models.Users;
 
 namespace api.Models.Projects;

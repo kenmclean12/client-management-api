@@ -1,5 +1,4 @@
 namespace api.Models.Users;
-
 public enum UserRole
 {
     ReadOnly = 1,

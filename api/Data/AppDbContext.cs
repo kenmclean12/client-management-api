@@ -12,17 +12,14 @@ namespace api.Data;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-    public DbSet<User> Users { get; set; } = null!;
-
-    public DbSet<UserInvite> UserInvites { get; set; } = null!;
-    public DbSet<Client> Clients { get; set; } = null!;
-
-    public DbSet<Request> Requests { get; set; } = null!;
-    public DbSet<Project> Projects { get; set; } = null!;
-    public DbSet<Job> Jobs { get; set; } = null!;
-    public DbSet<Contact> Contacts { get; set; } = null!;
-
-    public DbSet<Note> Notes { get; set; } = null!;
+    public DbSet<User> Users { get; set; }
+    public DbSet<UserInvite> UserInvites { get; set; }
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<Request> Requests { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Job> Jobs { get; set; }
+    public DbSet<Contact> Contacts { get; set; }
+    public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

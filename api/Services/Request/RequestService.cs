@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
 using ProjectModel = api.Models.Projects.Project;
 using api.Models.Projects;
+using api.Models.Request;
 namespace api.Services.Request;
 
 public static class RequestService

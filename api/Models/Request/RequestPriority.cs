@@ -1,3 +1,5 @@
+namespace api.Models.Request;
+
 public enum RequestPriority
 {
     Low = 1,
