@@ -101,8 +101,8 @@ public static class UserService
      nameof(UserRole.Admin),
      nameof(UserRole.Standard)
    )
-   .WithSummary("Create a user invite for a particular email address")
-   .WithDescription("Creates a user invite and returns the newly created record.")
+   .WithSummary("Create and send a user invite for a particular email address")
+   .WithDescription("Creates and sends a user invite and returns the newly created record.")
    .Produces<UserInvite>(StatusCodes.Status201Created)
    .Produces(StatusCodes.Status401Unauthorized)
    .Produces(StatusCodes.Status403Forbidden)
