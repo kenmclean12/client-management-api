@@ -66,17 +66,22 @@ public static class UserService
       async (
         AppDbContext db,
         UserInviteCreateDto dto,
-        ClaimsPrincipal user,
+        HttpContext context,
         IEmailService emailService,
         IConfiguration config,
+        IWebHostEnvironment env,
         CancellationToken token
       ) =>
     {
+      var user = context.User;
       var email = dto.Email.Trim().ToLowerInvariant();
       if (await db.UserInvites.AnyAsync(i => i.Email == email, token))
       {
         return Results.Conflict();
       }
+
+      var claimsList = user.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
+      Console.WriteLine("User: ", user);
 
       var userId = int.Parse(
         user.FindFirstValue(ClaimTypes.NameIdentifier)!
@@ -89,11 +94,7 @@ public static class UserService
       var inviteLink =
         $"{config["App:FrontendUrl"]}/register?invite={invite.Token}&email={email}";
 
-      await emailService.SendUserInviteAsync(
-        email,
-        inviteLink,
-        token
-      );
+      await emailService.SendUserInviteAsync(email, inviteLink, env, token);
 
       return Results.Created($"/user/invite-user/{invite.Id}", invite);
     })

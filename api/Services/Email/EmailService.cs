@@ -14,7 +14,12 @@ public class EmailService : IEmailService
     _config = config;
   }
 
-  public async Task SendUserInviteAsync(string toEmail, string inviteLink, CancellationToken token = default)
+  public async Task SendUserInviteAsync(
+    string toEmail, 
+    string inviteLink,
+    IWebHostEnvironment env,
+    CancellationToken token = default
+  )
   {
     var message = new MimeMessage();
     message.From.Add(
@@ -27,7 +32,7 @@ public class EmailService : IEmailService
     message.To.Add(MailboxAddress.Parse(toEmail));
     message.Subject = "Client Management User Invite";
 
-    var html = await LoadTemplateAsync("UserInvite.html");
+    var html = await LoadTemplateAsync("UserInviteTemplate.html", env);
     html = html
       .Replace("{{InviteLink}}", inviteLink)
       .Replace("{{AppName}}", _config["App:Name"]);
@@ -55,7 +60,16 @@ public class EmailService : IEmailService
     await client.DisconnectAsync(true, token);
   }
 
-  public async Task SendProjectFinishedAsync(string toEmail, string taskName, string taskDescription, DateTime taskStartDate, DateTime? taskDueDate, DateTime? taskFinishDate, CancellationToken token = default)
+  public async Task SendProjectFinishedAsync(
+    string toEmail, 
+    string taskName, 
+    string taskDescription, 
+    DateTime taskStartDate, 
+    DateTime? taskDueDate, 
+    DateTime? taskFinishDate,
+    IWebHostEnvironment env,
+    CancellationToken token = default
+  )
   {
     var message = new MimeMessage();
     message.From.Add(
@@ -68,7 +82,7 @@ public class EmailService : IEmailService
     message.To.Add(MailboxAddress.Parse(toEmail));
     message.Subject = $"Job Completed: {taskName}";
 
-    var html = await LoadTemplateAsync("ProjectComplete.html");
+    var html = await LoadTemplateAsync("ProjectComplete.html", env);
     var dueDate = taskDueDate.HasValue ? taskDueDate.Value.ToString("MMMM d, yyyy") : "n/a";
     var finishDate = taskFinishDate.HasValue ? taskFinishDate.Value.ToString("MMMM d, yyyy") : "n/a";
     html = html
@@ -103,10 +117,10 @@ public class EmailService : IEmailService
     await client.DisconnectAsync(true, token);
   }
 
-  public static async Task<string> LoadTemplateAsync(string name)
+  public static async Task<string> LoadTemplateAsync(string name, IWebHostEnvironment env)
   {
     var path = Path.Combine(
-      AppContext.BaseDirectory,
+      env.ContentRootPath,
       "Services",
       "Email",
       "Templates",

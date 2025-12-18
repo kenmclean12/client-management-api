@@ -5,6 +5,7 @@ public interface IEmailService
   Task SendUserInviteAsync(
     string toEmail,
     string inviteLink,
+    IWebHostEnvironment env,
     CancellationToken token = default
   );
 
@@ -15,6 +16,7 @@ public interface IEmailService
     DateTime taskStartDate,
     DateTime? taskDueDate,
     DateTime? taskFinishDate,
+    IWebHostEnvironment env,
     CancellationToken token = default
   );
 }

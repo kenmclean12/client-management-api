@@ -101,6 +101,7 @@ public static class ProjectService
         ProjectUpdateDto dto,
         int id,
         CancellationToken token,
+        IWebHostEnvironment env,
         IEmailService emailService
       ) =>
       {
@@ -121,7 +122,7 @@ public static class ProjectService
               project.StartDate,
               project.DueDate,
               project.EndDate,
-              token
+              env
             );
           }
         }
