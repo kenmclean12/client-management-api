@@ -30,7 +30,8 @@ public static class ProjectService
     .RequireJwt()
     .WithSummary("Find all active projects")
     .WithDescription("Returns all active project records")
-    .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -48,6 +49,7 @@ public static class ProjectService
     .WithSummary("Find a project by ID")
     .WithDescription("Returns a project record")
     .Produces<ProjectResponseDto>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapGet("/user/{id:int}", async (AppDbContext db, int id) =>
@@ -65,45 +67,37 @@ public static class ProjectService
     .RequireJwt()
     .WithSummary("Find assigned Projects by User ID")
     .WithDescription("Returns assigned projects for a particular user")
-    .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
-        var projects = await db.Projects
-          .Include(p => p.Jobs)
-          .Include(p => p.AssignedUser)
-          .Include(p => p.Client)
-          .Where(p => p.ClientId == id)
-          .Where(p => p.EndDate == null)
-          .ToListAsync();
-
-        if (projects is null) return Results.NotFound();
-        var response = projects.Select((p) => p.ToResponse());
-        return Results.Ok(response);
+        return Results.Ok(
+          await db.Projects
+            .Include(p => p.Jobs)
+            .Include(p => p.AssignedUser)
+            .Include(p => p.Client)
+            .Where(p => p.ClientId == id)
+            .Where(p => p.EndDate == null)
+            .Select(p => p.ToResponse())
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
     .WithSummary("Find projects by Client ID")
     .WithDescription("Returns all projects for a particular Client")
     .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status404NotFound);
+    .Produces(StatusCodes.Status401Unauthorized);
 
-    //To be removed/DEV only
-    group.MapPost("/", async (AppDbContext db, ProjectCreateDto dto) =>
-      {
-        var project = ModelProject.Create(dto);
-        db.Projects.Add(project);
-        await db.SaveChangesAsync();
-
-        return Results.Created($"/project/{project.Id}", project);
-      }
-    )
-    .WithSummary("Create a new project")
-    .WithDescription("Creates a project and returns the newly created record.")
-    .Produces<ModelProject>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest);
-
-    group.MapPut("/{id:int}", async (AppDbContext db, ProjectUpdateDto dto, int id, CancellationToken token, IEmailService emailService) =>
+    group.MapPut("/{id:int}",
+      async (
+        AppDbContext db,
+        ProjectUpdateDto dto,
+        int id,
+        CancellationToken token,
+        IEmailService emailService
+      ) =>
       {
         var project = await db.Projects.FindAsync(id);
         if (project is null) return Results.NotFound();
@@ -128,7 +122,14 @@ public static class ProjectService
         }
 
         await db.SaveChangesAsync(token);
-        return Results.Ok(project);
+        var fullProject = await db.Projects
+          .Where(p => p.Id == project.Id)
+          .Include((p) => p.AssignedUser)
+          .Include(p => p.Client)
+          .Select(p => p.ToResponse())
+          .ToListAsync();
+
+        return Results.Ok(fullProject);
       }
     )
     .RequireJwt(
@@ -137,8 +138,10 @@ public static class ProjectService
     )
     .WithSummary("Update project information")
     .WithDescription("Updates a project and returns the newly created record.")
-    .Produces<ModelProject>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status400BadRequest);
+    .Produces<ProjectResponseDto>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -158,6 +161,8 @@ public static class ProjectService
     .WithDescription("Removes a project and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }
