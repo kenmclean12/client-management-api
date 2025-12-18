@@ -33,9 +33,11 @@ public static class NoteService
       {
         return Results.Ok(
           await db.Notes
-            .Where(n => n.ClientId == id)
-            .Where(n => n.ProjectId == null)
-            .Where(n => n.JobId == null)
+            .Where(
+              n => n.ClientId == id
+              && n.ProjectId == null
+              && n.JobId == null
+            )
             .Include(n => n.User)
             .Select(n => n.ToResponse())
             .ToListAsync()
@@ -85,14 +87,12 @@ public static class NoteService
     group.MapPost("/", async (AppDbContext db, NoteCreateDto dto) =>
       {
         var note = ModelNote.Create(dto);
+
         db.Notes.Add(note);
         await db.SaveChangesAsync();
+        await db.Entry(note).Reference(n => n.User).LoadAsync();
 
-        var savedNote = await db.Notes
-          .Include(n => n.User)
-          .FirstOrDefaultAsync(n => n.Id == note.Id);
-
-        return Results.Created($"/note/{note.Id}", savedNote!.ToResponse());
+        return Results.Created($"/note/{note.Id}", note.ToResponse());
       }
     )
     .RequireJwt(
@@ -113,12 +113,9 @@ public static class NoteService
 
         note.Update(dto);
         await db.SaveChangesAsync();
+        await db.Entry(note).Reference(n => n.User).LoadAsync();
 
-        var savedNote = await db.Notes
-          .Include(n => n.User)
-          .FirstOrDefaultAsync(n => n.Id == note.Id);
-
-        return Results.Ok(savedNote!.ToResponse());
+        return Results.Ok(note.ToResponse());
       }
     )
    .RequireJwt(

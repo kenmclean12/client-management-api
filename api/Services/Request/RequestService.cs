@@ -3,7 +3,6 @@ using api.DTOs.Request;
 using api.Helpers.Token;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
-using RequestModel = api.Models.Requests.Request;
 using ProjectModel = api.Models.Projects.Project;
 using api.Models.Projects;
 using api.Models.Request;
@@ -54,8 +53,10 @@ public static class RequestService
       {
         return Results.Ok(
           await db.Requests
-            .Where(r => r.ClientId == id)
-            .Where(r => r.Status != RequestStatus.Approved)
+            .Where(r =>
+              r.ClientId == id
+              && r.Status != RequestStatus.Approved
+            )
             .Include(r => r.Client)
             .Select(r => r.ToResponse())
             .ToListAsync()
@@ -81,7 +82,6 @@ public static class RequestService
         if (!isNowApproved)
         {
           await db.SaveChangesAsync();
-
           return Results.Ok(request);
         }
 
@@ -110,10 +110,7 @@ public static class RequestService
         request.ReviewedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        var savedRequest = await db.Requests
-          .Include(r => r.Client)
-          .FirstOrDefaultAsync(r => r.Id == request.Id);
-
+        await db.Entry(request).Reference(r => r.Client).LoadAsync();
         return Results.Ok(request.ToResponse());
       }
     )

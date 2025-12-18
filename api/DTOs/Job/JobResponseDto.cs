@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using api.DTOs.Client;
 using api.DTOs.User;
 using api.Models.Jobs;
-using ModelClient = api.Models.Clients.Client;
 
 namespace api.DTOs.Jobs;
 
@@ -20,11 +20,11 @@ public class JobResponseDto
   [Required]
   public int ClientId { get; set; }
 
-  public ModelClient Client { get; set; } = null!;
+  public ClientResponseDto Client { get; set; } = null!;
 
   public int? AssignedUserId { get; set; }
 
-  public UserResponseDto? AssignedUser { get; set;}
+  public UserResponseDto? AssignedUser { get; set; }
 
   public JobStatus Status { get; set; } = JobStatus.Pending;
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.DTOs.Job;
 using api.DTOs.Jobs;
 using api.Models.Clients;
 using api.Models.Projects;
@@ -90,7 +91,7 @@ public class Job
       Name = Name,
       Description = Description,
       ClientId = ClientId,
-      Client = Client,
+      Client = Client.ToResponse(),
       Status = Status,
       Priority = Priority,
       DueDate = DueDate,

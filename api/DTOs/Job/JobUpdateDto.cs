@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using api.Models.Jobs;
 
+namespace api.DTOs.Job;
+
 public class JobUpdateDto
 {
     [MaxLength(100)]

@@ -1,4 +1,6 @@
 using api.Data;
+using api.DTOs.Job;
+using api.DTOs.Jobs;
 using api.Helpers.Token;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ public static class JobService
           await db.Jobs
             .Include(j => j.Client)
             .Include(j => j.AssignedUser)
+            .Select(j => j.ToResponse())
             .ToListAsync()
         );
       }
@@ -25,44 +28,56 @@ public static class JobService
     .RequireJwt()
     .WithSummary("Find all jobs")
     .WithDescription("Returns all job records")
-    .Produces<List<ModelJob>>(StatusCodes.Status200OK);
+    .Produces<List<JobResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
-        var job = await db.Jobs.FindAsync(id);
+        var job = await db.Jobs
+          .Include(j => j.Client)
+          .Include(j => j.AssignedUser)
+          .FirstOrDefaultAsync(j => j.Id == id);
+
         if (job is null) return Results.NotFound();
 
-        return Results.Ok(job);
+        return Results.Ok(job.ToResponse());
       }
     )
     .RequireJwt()
     .WithSummary("Find a job by ID")
     .WithDescription("Returns a job record")
-    .Produces<ModelJob>(StatusCodes.Status200OK)
+    .Produces<JobResponseDto>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapGet("/user/{id:int}", async (AppDbContext db, int id) =>
       {
         return Results.Ok(
           await db.Jobs
-           .Include(j => j.Client)
+            .Include(j => j.Client)
             .Include(j => j.AssignedUser)
-          .Where(j => j.AssignedUserId == id)
-          .ToListAsync()
+            .Where(j => j.AssignedUserId == id)
+            .Select(j => j.ToResponse())
+            .ToListAsync()
         );
       }
     )
     .RequireJwt()
     .WithSummary("Find assigned jobs by User ID")
     .WithDescription("Returns job records assigned to a particular user")
-    .Produces<List<ModelJob>>(StatusCodes.Status200OK);
+    .Produces<List<JobResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapPost("/", async (AppDbContext db, JobCreateDto dto) =>
       {
         var job = ModelJob.Create(dto);
+
         db.Jobs.Add(job);
         await db.SaveChangesAsync();
-        return Results.Created($"job/{job.Id}", job);
+        await db.Entry(job).Reference(j => j.Client).LoadAsync();
+        await db.Entry(job).Reference(j => j.AssignedUser).LoadAsync();
+
+        return Results.Created($"job/{job.Id}", job.ToResponse());
       }
     )
     .RequireJwt(
@@ -71,7 +86,9 @@ public static class JobService
     )
     .WithSummary("Create a new job")
     .WithDescription("Creates a job and returns the newly created record.")
-    .Produces<ModelJob>(StatusCodes.Status201Created)
+    .Produces<JobResponseDto>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status400BadRequest);
 
     group.MapPut("/{id:int}", async (AppDbContext db, JobUpdateDto dto, int id) =>
@@ -81,8 +98,10 @@ public static class JobService
 
         job.Update(dto);
         await db.SaveChangesAsync();
+        await db.Entry(job).Reference(j => j.Client).LoadAsync();
+        await db.Entry(job).Reference(j => j.AssignedUser).LoadAsync();
 
-        return Results.Ok(job);
+        return Results.Ok(job.ToResponse());
       }
     )
     .RequireJwt(
@@ -91,8 +110,10 @@ public static class JobService
     )
     .WithSummary("Update job information")
     .WithDescription("Updates a job and returns the newly created record.")
-    .Produces<ModelJob>(StatusCodes.Status200OK)
+    .Produces<JobResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
@@ -113,6 +134,8 @@ public static class JobService
     .WithDescription("Removes a job and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }

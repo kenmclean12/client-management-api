@@ -4,7 +4,6 @@ using api.Models.Projects;
 using api.Models.Users;
 using api.Services.Email;
 using Microsoft.EntityFrameworkCore;
-using ModelProject = api.Models.Projects.Project;
 
 namespace api.Services.Project;
 
@@ -17,11 +16,13 @@ public static class ProjectService
     group.MapGet("/", async (AppDbContext db) =>
       {
         return Results.Ok(await db.Projects
+          .Where((p) =>
+            p.EndDate == null
+            && p.ProjectStatus != ProjectStatus.Done
+          )
           .Include(p => p.Jobs)
           .Include(p => p.Client)
           .Include(p => p.AssignedUser)
-          .Where((p) => p.EndDate == null)
-          .Where(p => p.ProjectStatus != ProjectStatus.Done)
           .Select(p => p.ToResponse())
           .ToListAsync()
         );
@@ -75,11 +76,13 @@ public static class ProjectService
       {
         return Results.Ok(
           await db.Projects
+            .Where(p =>
+              p.ClientId == id
+              && p.EndDate == null
+            )
             .Include(p => p.Jobs)
             .Include(p => p.AssignedUser)
             .Include(p => p.Client)
-            .Where(p => p.ClientId == id)
-            .Where(p => p.EndDate == null)
             .Select(p => p.ToResponse())
             .ToListAsync()
         );
@@ -123,14 +126,10 @@ public static class ProjectService
         }
 
         await db.SaveChangesAsync(token);
-        var fullProject = await db.Projects
-          .Where(p => p.Id == project.Id)
-          .Include((p) => p.AssignedUser)
-          .Include(p => p.Client)
-          .Select(p => p.ToResponse())
-          .FirstOrDefaultAsync();
+        await db.Entry(project).Reference((p) => p.AssignedUser).LoadAsync(token);
+        await db.Entry(project).Reference((p) => p.Client).LoadAsync(token);
 
-        return Results.Ok(fullProject);
+        return Results.Ok(project.ToResponse());
       }
     )
     .RequireJwt(

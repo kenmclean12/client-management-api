@@ -1,4 +1,5 @@
 using api.Data;
+using api.DTOs.Request;
 using api.Models.Request;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
@@ -34,8 +35,8 @@ public static class InboundEmailService
       var requestModel = new RequestModel
       {
         Title = subject.Length > 150
-              ? subject[..150]
-              : subject,
+          ? subject[..150]
+          : subject,
         Description = body,
         ClientId = client.Id,
         Priority = RequestPriority.Normal,
@@ -44,14 +45,15 @@ public static class InboundEmailService
 
       db.Requests.Add(requestModel);
       await db.SaveChangesAsync();
+      await db.Entry(requestModel).Reference(r => r.Client).LoadAsync();
 
-      return Results.Ok();
+      return Results.Ok(requestModel.ToResponse());
     })
     .AllowAnonymous()
     .WithTags("Inbound Email")
     .WithSummary("Receive inbound email from clients")
     .WithDescription("Processes incoming emails from clients and creates a new request automatically.")
-    .Produces<RequestModel>(StatusCodes.Status200OK)
+    .Produces<RequestResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest);
   }
 }
