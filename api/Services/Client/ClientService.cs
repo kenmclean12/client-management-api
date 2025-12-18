@@ -18,6 +18,7 @@ public static class ClientService
         return Results.Ok(
           await db.Clients
             .Where(c => c.SoftDeleted == false)
+            .Select(c => c.ToResponse())
             .ToListAsync()
         );
       }
@@ -25,28 +26,27 @@ public static class ClientService
     .RequireJwt()
     .WithSummary("Find all active clients")
     .WithDescription("Returns all active client records")
-    .Produces<List<ClientModel>>(StatusCodes.Status200OK);
+    .Produces<List<ClientResponseDto>>(StatusCodes.Status200OK);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var client = await db.Clients.FindAsync(id);
         if (client is null) return Results.NotFound();
-        return Results.Ok(client);
+        return Results.Ok(client.ToResponse());
       }
     )
     .RequireJwt()
     .WithSummary("Find client by id")
     .WithDescription("Returns a client record")
-    .Produces<ClientModel>(StatusCodes.Status200OK)
+    .Produces<ClientResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status404NotFound);
-    
-    //TO BE REMOVED/DEV ONLY
+
     group.MapPost("/", async (AppDbContext db, ClientCreateDto dto) =>
       {
         var client = ClientModel.Create(dto);
         db.Clients.Add(client);
         await db.SaveChangesAsync();
-        return Results.Created($"/client/{client.Id}", client);
+        return Results.Created($"/client/{client.Id}", client.ToResponse());
       }
     )
     .RequireJwt(
@@ -55,7 +55,7 @@ public static class ClientService
     )
     .WithSummary("Create a new client")
     .WithDescription("Creates a client and returns the newly created record.")
-    .Produces<ClientModel>(StatusCodes.Status201Created)
+    .Produces<ClientResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
@@ -66,7 +66,7 @@ public static class ClientService
 
         client.Update(dto);
         await db.SaveChangesAsync();
-        return Results.Ok(client);
+        return Results.Ok(client.ToResponse());
       }
     )
     .RequireJwt(
@@ -75,7 +75,7 @@ public static class ClientService
     )
     .WithSummary("Update client information")
     .WithDescription("Updates a client and returns the newly created record.")
-    .Produces<ClientModel>(StatusCodes.Status200OK)
+    .Produces<ClientResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status409Conflict);
 
@@ -87,7 +87,7 @@ public static class ClientService
         client.SoftDeleted = true;
         await db.SaveChangesAsync();
 
-        return Results.Ok(client);
+        return Results.Ok(client.ToResponse());
       }
     )
     .RequireJwt(
@@ -95,25 +95,7 @@ public static class ClientService
     )
     .WithSummary("Soft Delete a client")
     .WithDescription("Soft Deletes a client and returns a 204 Response on success.")
-    .Produces<ClientModel>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status400BadRequest)
-    .Produces(StatusCodes.Status404NotFound);
-
-    //TO BE REMOVED/DEV ONLY
-    group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
-      {
-        var client = await db.Clients.FindAsync(id);
-        if (client is null) return Results.NotFound();
-
-        db.Clients.Remove(client);
-        await db.SaveChangesAsync();
-
-        return Results.NoContent();
-      }
-    )
-    .WithSummary("Remove a client")
-    .WithDescription("Removes a client and returns a 204 Response on success.")
-    .Produces(StatusCodes.Status204NoContent)
+    .Produces<ClientResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
     .Produces(StatusCodes.Status404NotFound);
   }

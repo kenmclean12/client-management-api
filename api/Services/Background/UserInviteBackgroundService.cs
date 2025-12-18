@@ -1,6 +1,8 @@
 using api.Data;
 using Microsoft.EntityFrameworkCore;
 
+namespace api.Services.Background;
+
 public class UserInviteCleanupService : BackgroundService
 {
   private readonly IServiceScopeFactory _scopeFactory;

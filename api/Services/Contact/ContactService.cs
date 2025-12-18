@@ -1,4 +1,5 @@
 using api.Data;
+using api.DTOs.Contact;
 using api.DTOs.Contacts;
 using api.Helpers.Token;
 using api.Models.Users;
@@ -14,26 +15,36 @@ public static class ContactService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        return Results.Ok(await db.Contacts.ToListAsync());
+        return Results.Ok(
+          await db.Contacts
+            .Include(c => c.Client)
+            .Select(c => c.ToResponse())
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
     .WithSummary("Find all contacts")
     .WithDescription("Returns all contact records")
-    .Produces<List<ModelContact>>(StatusCodes.Status200OK);
+    .Produces<List<ContactResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
-        var contact = await db.Contacts.FindAsync(id);
+        var contact = await db.Contacts
+          .Include(c => c.Client)
+          .FirstOrDefaultAsync(c => c.Id == id);
+
         if (contact is null) return Results.NotFound();
 
-        return Results.Ok(contact);
+        return Results.Ok(contact.ToResponse());
       }
     )
     .RequireJwt()
     .WithSummary("Find a contact by ID")
     .WithDescription("Returns a contact record")
-    .Produces<ModelContact>(StatusCodes.Status200OK)
+    .Produces<ContactResponseDto>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
@@ -41,6 +52,8 @@ public static class ContactService
         return Results.Ok(
           await db.Contacts
             .Where(c => c.ClientId == id)
+            .Include(c => c.Client)
+            .Select(c => c.ToResponse())
             .ToListAsync()
         );
       }
@@ -48,16 +61,19 @@ public static class ContactService
     .RequireJwt()
     .WithSummary("Find all contacts by Client ID")
     .WithDescription("Returns all client records for a particular client")
-    .Produces<List<ModelContact>>(StatusCodes.Status200OK)
+    .Produces<List<ContactResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapPost("/", async (AppDbContext db, ContactCreateDto dto) =>
       {
         var contact = ModelContact.Create(dto);
+
         db.Contacts.Add(contact);
         await db.SaveChangesAsync();
+        await db.Entry(contact).Reference(c => c.Client).LoadAsync();
 
-        return Results.Created($"contact/{contact.Id}", contact);
+        return Results.Created($"contact/{contact.Id}", contact.ToResponse());
       }
     )
     .RequireJwt(
@@ -66,8 +82,10 @@ public static class ContactService
     )
     .WithSummary("Create a new contact")
     .WithDescription("Creates a contact and returns the newly created record.")
-    .Produces<ModelContact>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest);
+    .Produces<ContactResponseDto>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden);
 
     group.MapPut("/{id:int}", async (AppDbContext db, ContactUpdateDto dto, int id) =>
       {
@@ -76,8 +94,9 @@ public static class ContactService
 
         contact.Update(dto);
         await db.SaveChangesAsync();
+        await db.Entry(contact).Reference(c => c.Client).LoadAsync();
 
-        return Results.Ok(contact);
+        return Results.Ok(contact.ToResponse());
       }
     )
     .RequireJwt(
@@ -86,7 +105,9 @@ public static class ContactService
     )
     .WithSummary("Update contact information")
     .WithDescription("Updates a contact and returns the newly created record.")
-    .Produces<ModelContact>(StatusCodes.Status200OK)
+    .Produces<ContactResponseDto>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status400BadRequest);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
@@ -107,6 +128,8 @@ public static class ContactService
     .WithDescription("Removes a contact and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }

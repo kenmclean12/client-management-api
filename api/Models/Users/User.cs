@@ -32,7 +32,9 @@ public class User
   public string LastName { get; set; } = null!;
 
   public string? AvatarUrl { get; set; }
+
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
   public DateTime? UpdatedAt { get; set; } = null;
 
   private static readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
@@ -83,7 +85,7 @@ public class User
 
     return response;
   }
-  
+
   public bool VerifyPassword(string password)
   {
     var result = _passwordHasher.VerifyHashedPassword(this, PasswordHash, password);

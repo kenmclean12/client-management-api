@@ -19,6 +19,7 @@ public class Request
 
   [Required]
   public int ClientId { get; set; }
+
   public Client Client { get; set; } = null!;
 
   public RequestStatus Status { get; set; } = RequestStatus.New;
@@ -28,6 +29,7 @@ public class Request
   public int? ProjectId { get; set; }
 
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
   public DateTime? ReviewedAt { get; set; }
 
   public static Request Create(RequestCreateDto dto)

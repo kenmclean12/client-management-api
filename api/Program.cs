@@ -15,6 +15,7 @@ using api.Services.Note;
 using api.Services.Request;
 using api.Services.Email;
 using api.Services.InboundEmail;
+using api.Services.Background;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["JWT_SECRET"] ?? throw new Exception("JWT_SECRET not set");
