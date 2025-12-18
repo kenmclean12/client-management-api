@@ -12,25 +12,25 @@ public class TokenService
 
   public TokenService(IConfiguration config)
   {
-    _key = config["JWT_SECRET"]!;
+    _key = config["JWT_SECRET"] ?? throw new InvalidOperationException("JWT_SECRET is not configured");
   }
 
   public string CreateToken(Models.Users.User user)
   {
     var claims = new[]
     {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        };
+      new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+      new Claim(ClaimTypes.Email, user.Email),
+      new Claim(ClaimTypes.Role, user.Role.ToString())
+    };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
     var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
     var token = new JwtSecurityToken(
-        claims: claims,
-        expires: DateTime.UtcNow.AddDays(7),
-        signingCredentials: credentials
+      claims: claims,
+      expires: DateTime.UtcNow.AddDays(7),
+      signingCredentials: credentials
     );
 
     return new JwtSecurityTokenHandler().WriteToken(token);

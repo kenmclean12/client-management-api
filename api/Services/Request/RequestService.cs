@@ -17,21 +17,26 @@ public static class RequestService
 
     group.MapGet("/", async (AppDbContext db) =>
       {
-        var requests = await db.Requests
-          .Include(r => r.Client)
-          .Where(r => r.Status != RequestStatus.Approved)
-          .ToListAsync();
-        return Results.Ok(requests);
+        return Results.Ok(
+          await db.Requests
+            .Include(r => r.Client)
+            .Where(r => r.Status != RequestStatus.Approved)
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
     .WithSummary("Find all requests")
     .WithDescription("Returns all request records")
-    .Produces<List<RequestModel>>(StatusCodes.Status200OK);
+    .Produces<List<RequestModel>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
-        var request = await db.Requests.FindAsync(id);
+        var request = await db.Requests
+          .Include(r => r.Client)
+          .FirstOrDefaultAsync(r => r.Id == id);
+
         if (request is null) return Results.NotFound();
 
         return Results.Ok(request);
@@ -41,39 +46,25 @@ public static class RequestService
     .WithSummary("Find a request by ID")
     .WithDescription("Returns a request record")
     .Produces<RequestModel>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
-        var requests = await db.Requests
-          .Where(r => r.ClientId == id)
-          .Where(r => r.Status != RequestStatus.Approved)
-          .Include(r => r.Client)
-          .ToListAsync();
-
-        if (requests.Count == 0) return Results.NotFound();
-        return Results.Ok(requests);
+        return Results.Ok(
+          await db.Requests
+            .Where(r => r.ClientId == id)
+            .Where(r => r.Status != RequestStatus.Approved)
+            .Include(r => r.Client)
+            .ToListAsync()
+        );
       }
     )
     .RequireJwt()
     .WithSummary("Find all requests by client")
     .WithDescription("Returns all requests for a specific client")
     .Produces<List<RequestModel>>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status404NotFound);
-
-    group.MapPost("/", async (AppDbContext db, RequestCreateDto dto) =>
-      {
-        var request = RequestModel.Create(dto);
-        db.Requests.Add(request);
-        await db.SaveChangesAsync();
-
-        return Results.Created($"/request/{request.Id}", request);
-      }
-    )
-    .WithSummary("Create a new request")
-    .WithDescription("Creates a request and returns the newly created record.")
-    .Produces<RequestModel>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest);
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapPut("/{id:int}", async (AppDbContext db, RequestUpdateDto dto, int id) =>
       {
@@ -81,30 +72,39 @@ public static class RequestService
         if (request is null) return Results.NotFound();
         request.Update(dto);
 
-        var isNowApproved = request.Status == RequestStatus.Approved;
-        if (isNowApproved)
-        {
-          var projectDto = new ProjectCreateDto
-          {
-            Name = request.Title,
-            Description = request.Description,
-            ClientId = request.ClientId,
-            AssignedUserId =
-              dto.AssignedUserId
-              ?? throw new Exception("AssignedUserId required to Create Project from Request"),
-            StartDate = DateTime.UtcNow,
-            DueDate = dto.DueDate,
-            ProjectPriority = request.Priority,
-            ProjectStatus = ProjectStatus.Pending
-          };
+        var isNowApproved =
+          request.Status == RequestStatus.Approved &&
+          request.ProjectId == null;
 
-          var project = ProjectModel.Create(projectDto);
-          db.Projects.Add(project);
+        if (!isNowApproved)
+        {
           await db.SaveChangesAsync();
-          request.ProjectId = project.Id;
-          request.ReviewedAt = DateTime.UtcNow;
+          return Results.Ok(request);
         }
 
+        if (dto.AssignedUserId is not int userId)
+        {
+          return Results.BadRequest("AssignedUserId is required when approving a request");
+        }
+
+        var projectDto = new ProjectCreateDto
+        {
+          Name = request.Title,
+          Description = request.Description,
+          ClientId = request.ClientId,
+          AssignedUserId = userId,
+          StartDate = DateTime.UtcNow,
+          DueDate = dto.DueDate,
+          ProjectPriority = request.Priority,
+          ProjectStatus = ProjectStatus.Pending
+        };
+
+        var project = ProjectModel.Create(projectDto);
+        db.Projects.Add(project);
+        await db.SaveChangesAsync();
+
+        request.ProjectId = project.Id;
+        request.ReviewedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Results.Ok(request);
       }
@@ -117,6 +117,8 @@ public static class RequestService
     .WithDescription("Updates a request and returns the updated record.")
     .Produces<RequestModel>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
@@ -136,6 +138,8 @@ public static class RequestService
     .WithSummary("Remove a request")
     .WithDescription("Removes a request and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }

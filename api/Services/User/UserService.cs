@@ -16,31 +16,36 @@ public static class UserService
     var group = app.MapGroup("/user").WithTags("User");
 
     group.MapGet("/", async (AppDbContext db) =>
-        {
-          var users = await db.Users.ToListAsync();
-          var dtos = users.Select(u => u.ToResponse()).ToList();
-          return Results.Ok(dtos);
-        }
+      {
+        return Results.Ok(
+          await db.Users
+            .Select(u => u.ToResponse())
+            .ToListAsync()
+        );
+      }
     )
     .RequireJwt()
     .WithSummary("Find all users")
     .WithDescription("Returns all user records")
-    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/admin", async (AppDbContext db) =>
-        {
-          var users = await db.Users
-            .Where(u => u.Role == UserRole.Admin)
-            .ToListAsync();
-
-          var dtos = users.Select(u => u.ToResponse()).ToList();
-          return Results.Ok(dtos);
-        }
+      {
+        return Results.Ok(
+          await db.Users
+          .Where(u => u.Role == UserRole.Admin)
+          .Select(u => u.ToResponse())
+          .ToListAsync()
+        );
+      }
     )
     .RequireJwt()
     .WithSummary("Find all admin users")
     .WithDescription("Returns all admin user records")
-    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<UserResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
+
 
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -54,23 +59,8 @@ public static class UserService
     .WithSummary("Find a user by ID")
     .WithDescription("Find a user record by ID")
     .Produces<UserResponseDto>(StatusCodes.Status200OK)
-    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
-
-    group.MapPost("/", async (UserCreateDto dto, AppDbContext db) =>
-      {
-        var user = ModelUser.Create(dto);
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        return Results.Created($"/user/{user.Id}", user.ToResponse());
-      }
-    )
-    .WithSummary("Create a new user")
-    .WithDescription("Creates a user and returns the newly created record.")
-    .Produces<UserResponseDto>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest)
-    .Produces(StatusCodes.Status409Conflict);
 
     group.MapPost("/invite-user",
       async (
@@ -83,9 +73,10 @@ public static class UserService
       ) =>
     {
       var email = dto.Email.Trim().ToLowerInvariant();
-
       if (await db.UserInvites.AnyAsync(i => i.Email == email, token))
+      {
         return Results.Conflict();
+      }
 
       var userId = int.Parse(
         user.FindFirstValue(ClaimTypes.NameIdentifier)!
@@ -113,7 +104,8 @@ public static class UserService
    .WithSummary("Create a user invite for a particular email address")
    .WithDescription("Creates a user invite and returns the newly created record.")
    .Produces<UserInvite>(StatusCodes.Status201Created)
-   .Produces(StatusCodes.Status400BadRequest)
+   .Produces(StatusCodes.Status401Unauthorized)
+   .Produces(StatusCodes.Status403Forbidden)
    .Produces(StatusCodes.Status409Conflict);
 
     group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
@@ -135,6 +127,8 @@ public static class UserService
     .WithDescription("Updates a user and returns the newly created record.")
     .Produces<UserResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound)
     .Produces(StatusCodes.Status409Conflict);
 
@@ -159,10 +153,11 @@ public static class UserService
     )
     .WithSummary("Reset a users password")
     .WithDescription("Resets a users password and returns the newly created record.")
-    .Produces<UserResponseDto>(StatusCodes.Status201Created)
+    .Produces<UserResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
-    .Produces(StatusCodes.Status404NotFound)
-    .Produces(StatusCodes.Status409Conflict);
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -182,7 +177,8 @@ public static class UserService
     .WithSummary("Remove a user")
     .WithDescription("Removes a user and returns a 204 Response on success.")
     .Produces(StatusCodes.Status204NoContent)
-    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }
