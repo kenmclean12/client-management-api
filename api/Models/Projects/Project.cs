@@ -91,7 +91,7 @@ public class Project
             ProjectStatus = ProjectStatus,
         };
 
-        if (Jobs is not null) response.Jobs = Jobs.Select(j => j.ToResponse()).ToList();
+        if (Jobs is not null) response.Jobs = [.. Jobs.Select(j => j.ToResponse())];
         if (Description is not null) response.Description = Description;
         if (DueDate is DateTime dueDate) response.DueDate = dueDate;
         if (EndDate is DateTime endDate) response.EndDate = endDate;

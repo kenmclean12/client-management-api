@@ -36,10 +36,10 @@ public static class ProjectService
     group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
       {
         var project = await db.Projects
-          .Include((p) => p.AssignedUser)
+          .Include(p => p.Jobs)
           .Include(p => p.Client)
-          .Where(p => p.Id == id)
-          .FirstOrDefaultAsync();
+          .Include((p) => p.AssignedUser)
+          .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project is null) return Results.NotFound();
         return Results.Ok(project.ToResponse());
@@ -57,6 +57,7 @@ public static class ProjectService
         return Results.Ok(
           await db.Projects
             .Where(p => p.AssignedUserId == id)
+            .Include(p => p.Jobs)
             .Include((p) => p.AssignedUser)
             .Include(p => p.Client)
             .Select(p => p.ToResponse())
@@ -127,7 +128,7 @@ public static class ProjectService
           .Include((p) => p.AssignedUser)
           .Include(p => p.Client)
           .Select(p => p.ToResponse())
-          .ToListAsync();
+          .FirstOrDefaultAsync();
 
         return Results.Ok(fullProject);
       }

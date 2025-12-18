@@ -26,9 +26,10 @@ public static class NoteService
     .RequireJwt()
     .WithSummary("Find all notes")
     .WithDescription("Returns all contact records")
-    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
-    group.MapGet("/{id:int}", async (AppDbContext db, int id) =>
+    group.MapGet("/client/{id:int}", async (AppDbContext db, int id) =>
       {
         return Results.Ok(
           await db.Notes
@@ -44,7 +45,8 @@ public static class NoteService
     .RequireJwt()
     .WithSummary("Find all notes for a particular client")
     .WithDescription("Returns all note records for a particular client")
-    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/project/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -60,7 +62,8 @@ public static class NoteService
     .RequireJwt()
     .WithSummary("Find all notes for a particular project")
     .WithDescription("Returns all note records for a particular project")
-    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapGet("/job/{id:int}", async (AppDbContext db, int id) =>
       {
@@ -76,14 +79,22 @@ public static class NoteService
     .RequireJwt()
     .WithSummary("Find all notes for a particular project")
     .WithDescription("Returns all note records for a particular project")
-    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK);
+    .Produces<List<NoteResponseDto>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
     group.MapPost("/", async (AppDbContext db, NoteCreateDto dto) =>
       {
         var note = ModelNote.Create(dto);
         db.Notes.Add(note);
         await db.SaveChangesAsync();
-        return Results.Created($"/note/{note.Id}", note);
+
+        var savedNote = await db.Notes
+           .Where(n => n.Id == note.Id)
+            .Include(n => n.User)
+            .Select(n => n.ToResponse())
+            .ToListAsync();
+
+        return Results.Created($"/note/{note.Id}", savedNote);
       }
     )
     .RequireJwt(
@@ -92,8 +103,10 @@ public static class NoteService
     )
     .WithSummary("Create a new note")
     .WithDescription("Creates a note and returns the newly created record.")
-    .Produces<ModelNote>(StatusCodes.Status201Created)
-    .Produces(StatusCodes.Status400BadRequest);
+    .Produces<NoteResponseDto>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden);
 
     group.MapPut("/{id:int}", async (AppDbContext db, NoteUpdateDto dto, int id) =>
       {
@@ -103,7 +116,13 @@ public static class NoteService
         note.Update(dto);
         await db.SaveChangesAsync();
 
-        return Results.Ok(note);
+        var savedNote = await db.Notes
+          .Where(n => n.Id == note.Id)
+          .Include(n => n.User)
+          .Select(n => n.ToResponse())
+          .SingleAsync();
+
+        return Results.Ok(savedNote);
       }
     )
    .RequireJwt(
@@ -112,8 +131,10 @@ public static class NoteService
     )
     .WithSummary("Update a note by ID")
     .WithDescription("Updates a note and returns the newly created record.")
-    .Produces<ModelNote>(StatusCodes.Status200OK)
+    .Produces<NoteResponseDto>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
 
     group.MapDelete("/{id:int}", async (AppDbContext db, int id) =>
@@ -132,9 +153,11 @@ public static class NoteService
       nameof(UserRole.Standard)
     )
     .WithSummary("Delete a note by ID")
-    .WithDescription("Delete a note and returns the newly created record.")
-    .Produces<ModelNote>(StatusCodes.Status200OK)
+    .WithDescription("Deletes a note and returns a 204 Response on success")
+    .Produces(StatusCodes.Status204NoContent)
     .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
     .Produces(StatusCodes.Status404NotFound);
   }
 }

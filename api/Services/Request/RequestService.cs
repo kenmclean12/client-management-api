@@ -79,6 +79,7 @@ public static class RequestService
         if (!isNowApproved)
         {
           await db.SaveChangesAsync();
+          
           return Results.Ok(request);
         }
 
