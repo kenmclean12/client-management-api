@@ -1,45 +1,40 @@
-using System.ComponentModel.DataAnnotations;
 using api.DTOs.Jobs;
 using api.DTOs.User;
-using api.Models.Clients;
+using ModelClient = api.Models.Clients.Client;
 using api.Models.Request;
+using api.Models.Projects;
 
-namespace api.Models.Projects;
+namespace api.DTOs.Project;
 
 public class ProjectResponseDto
 {
-    public int Id { get; set; }
+  public int Id { get; set; }
 
-    [Required]
-    [MaxLength(150)]
-    public string Name { get; set; } = null!;
+  public string Name { get; set; } = null!;
 
-    [MaxLength(2000)]
-    public string? Description { get; set; }
+  public string? Description { get; set; }
 
-    [Required]
-    public int ClientId { get; set; }
-    public Client Client { get; set; } = null!;
+  public int ClientId { get; set; }
 
-    [Required]
-    public int AssignedUserId { get; set; }
-    public UserResponseDto AssignedUser { get; set; } = null!;
+  public ModelClient Client { get; set; } = null!;
 
-    public List<JobResponseDto>? Jobs { get; set; }
+  public int AssignedUserId { get; set; }
 
-    [Required]
-    public DateTime StartDate { get; set; }
+  public UserResponseDto AssignedUser { get; set; } = null!;
 
-    public DateTime? DueDate { get; set; }
+  public List<JobResponseDto>? Jobs { get; set; }
 
-    public DateTime? EndDate { get; set; }
+  public DateTime StartDate { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
+  public DateTime? DueDate { get; set; }
 
-    [Required]
-    public RequestPriority ProjectPriority { get; set; } = RequestPriority.Low;
+  public DateTime? EndDate { get; set; }
 
-    [Required]
-    public ProjectStatus ProjectStatus { get; set; } = ProjectStatus.Pending;
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+  public DateTime? UpdatedAt { get; set; }
+
+  public RequestPriority ProjectPriority { get; set; } = RequestPriority.Low;
+
+  public ProjectStatus ProjectStatus { get; set; } = ProjectStatus.Pending;
 }

@@ -1,26 +1,24 @@
-using System.ComponentModel.DataAnnotations;
 using api.DTOs.User;
+
+namespace api.DTOs.Note;
 
 public class NoteResponseDto
 {
-    public int Id { get; set; }
+  public int Id { get; set; }
 
-    [Required]
-    [MaxLength(1000)]
-    public string Content { get; set; } = null!;
+  public string Content { get; set; } = null!;
 
-    [Required]
-    public int ClientId { get; set; }
+  public int ClientId { get; set; }
 
-    [Required]
-    public int UserId { get; set; }
+  public int UserId { get; set; }
 
-    public UserResponseDto User { get; set; } = null!;
+  public UserResponseDto User { get; set; } = null!;
 
-    public int? ProjectId { get; set; }
+  public int? ProjectId { get; set; }
 
-    public int? JobId { get; set; }
+  public int? JobId { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+  public DateTime? UpdatedAt { get; set; }
 }

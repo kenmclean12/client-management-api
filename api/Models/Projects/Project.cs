@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using api.DTOs.Project;
 using api.Models.Clients;
 using api.Models.Jobs;
 using api.Models.Request;
