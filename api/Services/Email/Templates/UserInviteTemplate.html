@@ -1,16 +1,44 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family: Arial, sans-serif;">
-  <h2>You’ve been invited</h2>
-  <p>
-    You’ve been invited to join <strong>{{AppName}}</strong>.
-  </p>
-  <p>
-    <a href="{{InviteLink}}"
-       style="display:inline-block;padding:10px 16px;
-              background:#2563eb;color:#fff;text-decoration:none;">
-      Accept Invite
-    </a>
-  </p>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0; padding:40px 20px; background:#f8fafc; font-family:'Outfit', 'Segoe UI', Arial, sans-serif;">
+    <div style="max-width:500px; margin:0 auto; background:white; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.05); overflow:hidden;">
+        <div style="background:linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); padding:32px 24px; text-align:center;">
+            <h1 style="color:white; font-weight:600; font-size:24px; margin:0; letter-spacing:-0.02em;">
+                You've Been Invited
+            </h1>
+            <p style="color:rgba(255,255,255,0.9); font-weight:300; font-size:15px; margin:8px 0 0;">
+                Join the team on {{AppName}}
+            </p>
+        </div>
+        <div style="padding:40px 32px; text-align:center;">
+            <div style="background:#f1f5f9; border-radius:12px; padding:20px; margin:0 0 32px;">
+                <p style="color:#475569; font-size:16px; line-height:1.5; margin:0;">
+                    You've been invited to join <strong style="color:#1e293b; font-weight:600;">{{AppName}}</strong>.
+                    Accept your invitation to get started.
+                </p>
+            </div>
+            
+            <a href="{{InviteLink}}" 
+               style="display:inline-block; background:#2563eb; color:white; text-decoration:none; 
+                      font-weight:500; font-size:15px; padding:14px 32px; border-radius:10px; 
+                      transition:all 0.2s; box-shadow:0 2px 8px rgba(37, 99, 235, 0.2);"
+               onmouseover="this.style.backgroundColor='#1d4ed8'; this.style.transform='translateY(-1px)';"
+               onmouseout="this.style.backgroundColor='#2563eb'; this.style.transform='translateY(0)';">
+                Accept Invitation
+            </a>
+            
+            <p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:24px 0 0;">
+                This link expires in 7 days. If you didn't request this invitation, you can safely ignore this email.
+            </p>
+        </div>
+        <div style="background:#f8fafc; padding:20px; text-align:center; border-top:1px solid #e2e8f0;">
+            <p style="color:#64748b; font-size:12px; margin:0;">
+                Sent via {{AppName}} • <a href="{{AppUrl}}" style="color:#2563eb; text-decoration:none;">Visit Website</a>
+            </p>
+        </div>
+    </div>
 </body>
 </html>

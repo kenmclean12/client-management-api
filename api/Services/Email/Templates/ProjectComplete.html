@@ -1,26 +1,49 @@
 <!DOCTYPE html>
 <html>
-<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
-  <div style="max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    <h2 style="color: #2563eb;">Project Completed!</h2>
-    <p>Hello,</p>
-    <p>The following project has been completed:</p>
-    <ul>
-      <li><strong>Project Name:</strong> {{TaskName}}</li>
-      <li><strong>Description:</strong> {{TaskDescription}}</li>
-      <li><strong>Start Date:</strong> {{TaskStartDate}}</li>
-      <li><strong>Due Date:</strong> {{TaskDueDate}}</li>
-      <li><strong>Completion Date:</strong> {{TaskFinishDate}}</li>
-    </ul>
-    <p style="text-align: center; margin-top: 30px;">
-      <a href="{{AppFrontendUrl}}" 
-         style="display:inline-block; padding:12px 20px; background-color:#2563eb; color:#fff; text-decoration:none; border-radius:6px;">
-        View Project
-      </a>
-    </p>
-    <p style="font-size:12px; color:#888; margin-top:20px;">
-      This is an automated message from {{AppName}}. Please do not reply.
-    </p>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0; padding:40px 20px; background:#f8fafc; font-family:'Outfit', 'Segoe UI', Arial, sans-serif;">
+  <div style="max-width:500px; margin:0 auto; background:white; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.05); overflow:hidden;">
+    <div style="background:#10b981; padding:16px; text-align:center;">
+      <div style="display:inline-flex; align-items:center; background:rgba(255,255,255,0.15); backdrop-filter:blur(4px); padding:6px 16px; border-radius:20px;">
+        <span style="width:8px; height:8px; background:white; border-radius:50%; margin-right:8px;"></span>
+        <span style="color:white; font-weight:500; font-size:14px;">PROJECT COMPLETED</span>
+      </div>
+    </div>
+    <div style="padding:40px 32px;">
+      <h2 style="color:#1e293b; font-weight:600; font-size:22px; margin:0 0 8px; letter-spacing:-0.02em;">Great news!</h2>
+      <p style="color:#64748b; font-size:15px; line-height:1.5; margin:0 0 32px;">A project has been successfully completed.</p>
+      <div style="background:#f8fafc; border-radius:12px; padding:24px; margin-bottom:32px;">
+        <h3 style="color:#2563eb; font-weight:600; font-size:16px; margin:0 0 20px;">Project Details</h3>
+        <p style="color:#94a3b8; font-size:13px; font-weight:500; margin:0 0 4px; text-transform:uppercase;">Project Name</p>
+        <p style="color:#1e293b; font-size:15px; font-weight:500; margin:0 0 16px;">{{TaskName}}</p>
+        <p style="color:#94a3b8; font-size:13px; font-weight:500; margin:0 0 4px; text-transform:uppercase;">Completion Date</p>
+        <p style="color:#1e293b; font-size:15px; font-weight:500; margin:0 0 16px;">{{TaskFinishDate}}</p>
+        <p style="color:#94a3b8; font-size:13px; font-weight:500; margin:0 0 4px; text-transform:uppercase;">Description</p>
+        <p style="color:#475569; font-size:15px; line-height:1.5; margin:0 0 24px;">{{TaskDescription}}</p>
+        <div style="border-left:2px solid #e2e8f0; padding-left:20px; margin-top:24px;">
+          <div style="position:relative; margin-bottom:24px;">
+            <div style="width:12px; height:12px; background:#10b981; border-radius:50%; position:absolute; left:-7px; top:0;"></div>
+            <p style="margin:0; font-size:13px; color:#64748b;">{{TaskStartDate}}</p>
+            <p style="margin:0; font-size:12px; color:#94a3b8;">Started</p>
+          </div>
+          <div style="position:relative; margin-bottom:24px;">
+            <div style="width:12px; height:12px; background:#ef4444; border-radius:50%; position:absolute; left:-7px; top:0;"></div>
+            <p style="margin:0; font-size:13px; color:#64748b;">{{TaskDueDate}}</p>
+            <p style="margin:0; font-size:12px; color:#94a3b8;">Due</p>
+          </div>
+          <div style="position:relative; margin-bottom:0;">
+            <div style="width:12px; height:12px; background:#2563eb; border-radius:50%; position:absolute; left:-7px; top:0;"></div>
+            <p style="margin:0; font-size:13px; color:#64748b;">{{TaskFinishDate}}</p>
+            <p style="margin:0; font-size:12px; color:#94a3b8;">Completed</p>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:24px 0 0;">This is an automated notification from <strong>{{AppName}}</strong>. Please do not reply to this email.</p>
+      </div>
+    </div>
   </div>
 </body>
 </html>
