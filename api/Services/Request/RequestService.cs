@@ -8,6 +8,7 @@ using api.Models.Projects;
 using api.DTOs.Project;
 using ModelRequest = api.Models.Requests.Request;
 using api.Models.Requests;
+using api.Services.Email;
 namespace api.Services.Request;
 
 public static class RequestService
@@ -87,7 +88,14 @@ public static class RequestService
     .Produces<RequestResponseDto>(StatusCodes.Status201Created)
     .Produces(StatusCodes.Status400BadRequest);
 
-    group.MapPut("/{id:int}", async (AppDbContext db, RequestUpdateDto dto, int id) =>
+    group.MapPut("/{id:int}", async (
+      AppDbContext db,
+      RequestUpdateDto dto,
+      int id,
+      IWebHostEnvironment env,
+      CancellationToken token,
+      IEmailService emailService
+    ) =>
       {
         var request = await db.Requests.FindAsync(id);
         if (request is null) return Results.NotFound();
@@ -127,6 +135,19 @@ public static class RequestService
         request.ProjectId = project.Id;
         request.ReviewedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
+
+        var contacts = await db.Contacts.Where(c => c.ClientId == project.ClientId).ToListAsync(token);
+        foreach (var contact in contacts)
+        {
+          await emailService.SendProjectStartedAsync(
+            contact.Email,
+            project.Name,
+            project.Description ?? "n/a",
+            project.StartDate,
+            project.DueDate,
+            env
+          );
+        }
 
         await db.Entry(request).Reference(r => r.Client).LoadAsync();
         return Results.Ok(request.ToResponse());

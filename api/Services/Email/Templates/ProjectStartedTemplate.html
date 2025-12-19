@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0; padding:40px 20px; background:#f8fafc; font-family:'Outfit', 'Segoe UI', Arial, sans-serif;">
+  <div style="max-width:500px; margin:0 auto; background:white; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.05); overflow:hidden;">
+    <div style="background:#2563eb; padding:16px; text-align:center;">
+      <div style="display:inline-flex; align-items:center; background:rgba(255,255,255,0.15); backdrop-filter:blur(4px); padding:6px 16px; border-radius:20px;">
+        <span style="width:8px; height:8px; background:white; border-radius:50%; margin-right:8px;"></span>
+        <span style="color:white; font-weight:500; font-size:14px;">PROJECT STARTED</span>
+      </div>
+    </div>
+    <div style="padding:40px 32px;">
+      <h2 style="color:#1e293b; font-weight:600; font-size:22px; margin:0 0 8px; letter-spacing:-0.02em;">
+        Project Started
+      </h2>
+
+      <p style="color:#64748b; font-size:15px; line-height:1.5; margin:0 0 32px;">
+        A project has officially started. Here are the details.
+      </p>
+
+      <div style="background:#f8fafc; border-radius:12px; padding:24px; margin-bottom:32px;">
+        <h3 style="color:#2563eb; font-weight:600; font-size:16px; margin:0 0 20px;">
+          Project Details
+        </h3>
+
+        <p style="color:#94a3b8; font-size:13px; font-weight:500; margin:0 0 4px; text-transform:uppercase;">
+          Project Name
+        </p>
+        <p style="color:#1e293b; font-size:15px; font-weight:500; margin:0 0 16px;">
+          {{TaskName}}
+        </p>
+
+        <p style="color:#94a3b8; font-size:13px; font-weight:500; margin:0 0 4px; text-transform:uppercase;">
+          Description
+        </p>
+        <p style="color:#475569; font-size:15px; line-height:1.5; margin:0 0 24px;">
+          {{TaskDescription}}
+        </p>
+
+        <div style="border-left:2px solid #e2e8f0; padding-left:20px; margin-top:24px;">
+          
+          <div style="position:relative; margin-bottom:24px;">
+            <div style="width:12px; height:12px; background:#2563eb; border-radius:50%; position:absolute; left:-7px; top:0;"></div>
+            <p style="margin:0; font-size:13px; color:#64748b;">
+              {{TaskStartDate}}
+            </p>
+            <p style="margin:0; font-size:12px; color:#94a3b8;">
+              Started
+            </p>
+          </div>
+
+          <div style="position:relative; margin-bottom:0;">
+            <div style="width:12px; height:12px; background:#f59e0b; border-radius:50%; position:absolute; left:-7px; top:0;"></div>
+            <p style="margin:0; font-size:13px; color:#64748b;">
+              {{TaskDueDate}}
+            </p>
+            <p style="margin:0; font-size:12px; color:#94a3b8;">
+              Due
+            </p>
+          </div>
+
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <p style="color:#94a3b8; font-size:13px; line-height:1.5; margin:24px 0 0;">
+          This is an automated notification from <strong>{{AppName}}</strong>.
+          Please do not reply to this email.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

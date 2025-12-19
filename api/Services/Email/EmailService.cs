@@ -15,7 +15,7 @@ public class EmailService : IEmailService
   }
 
   public async Task SendUserInviteAsync(
-    string toEmail, 
+    string toEmail,
     string inviteLink,
     IWebHostEnvironment env,
     CancellationToken token = default
@@ -60,12 +60,67 @@ public class EmailService : IEmailService
     await client.DisconnectAsync(true, token);
   }
 
+  public async Task SendProjectStartedAsync
+  (
+    string toEmail,
+    string taskName,
+    string taskDescription,
+    DateTime taskStartDate,
+    DateTime? taskDueDate,
+    IWebHostEnvironment env,
+    CancellationToken token = default
+  )
+  {
+    var message = new MimeMessage();
+    message.From.Add(
+      new MailboxAddress(
+        _config["Email:FromName"],
+        _config["Email:FromAddress"]
+      )
+    );
+
+    message.To.Add(MailboxAddress.Parse(toEmail));
+    message.Subject = $"Project Started: {taskName}";
+
+    var html = await LoadTemplateAsync("ProjectStartedTemplate.html", env);
+    var dueDate = taskDueDate.HasValue ? taskDueDate.Value.ToString("MMMM d, yyyy") : "n/a";
+    html = html
+      .Replace("{{TaskName}}", taskName)
+      .Replace("{{TaskDescription}}", taskDescription)
+      .Replace("{{TaskStartDate}}", taskStartDate.ToString("MMMM d, yyyy"))
+      .Replace("{{TaskDueDate}}", dueDate)
+      .Replace("{{AppFrontendUrl}}", _config["App:FrontendUrl"])
+      .Replace("{{AppName}}", _config["App:Name"]);
+
+    message.Body = new BodyBuilder
+    {
+      HtmlBody = html
+    }.ToMessageBody();
+
+    using var client = new SmtpClient();
+    await client.ConnectAsync(
+      _config["Email:SmtpHost"],
+      int.Parse(_config["Email:SmtpPort"]!),
+      SecureSocketOptions.StartTls,
+      token
+    );
+
+    await client.AuthenticateAsync(
+      _config["Email:Username"],
+      Environment.GetEnvironmentVariable("SENDGRID_API_KEY"),
+      token
+    );
+
+    await client.SendAsync(message, token);
+    await client.DisconnectAsync(true, token);
+  }
+
   public async Task SendProjectFinishedAsync(
-    string toEmail, 
-    string taskName, 
-    string taskDescription, 
-    DateTime taskStartDate, 
-    DateTime? taskDueDate, 
+    string toEmail,
+    string taskName,
+    string taskDescription,
+    DateTime taskStartDate,
+    DateTime? taskDueDate,
     DateTime? taskFinishDate,
     IWebHostEnvironment env,
     CancellationToken token = default
@@ -82,7 +137,7 @@ public class EmailService : IEmailService
     message.To.Add(MailboxAddress.Parse(toEmail));
     message.Subject = $"Job Completed: {taskName}";
 
-    var html = await LoadTemplateAsync("ProjectComplete.html", env);
+    var html = await LoadTemplateAsync("ProjectCompleteTemplate.html", env);
     var dueDate = taskDueDate.HasValue ? taskDueDate.Value.ToString("MMMM d, yyyy") : "n/a";
     var finishDate = taskFinishDate.HasValue ? taskFinishDate.Value.ToString("MMMM d, yyyy") : "n/a";
     html = html
