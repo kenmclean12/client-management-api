@@ -80,9 +80,6 @@ public static class UserService
         return Results.Conflict();
       }
 
-      var claimsList = user.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
-      Console.WriteLine("User: ", user);
-
       var userId = int.Parse(
         user.FindFirstValue(ClaimTypes.NameIdentifier)!
       );
@@ -92,7 +89,7 @@ public static class UserService
       await db.SaveChangesAsync(token);
 
       var inviteLink =
-        $"{config["App:FrontendUrl"]}/register?invite={invite.Token}&email={email}";
+        $"{config["App:FrontendUrl"]}/register?email={email}";
 
       await emailService.SendUserInviteAsync(email, inviteLink, env, token);
 
@@ -108,38 +105,6 @@ public static class UserService
    .Produces(StatusCodes.Status401Unauthorized)
    .Produces(StatusCodes.Status403Forbidden)
    .Produces(StatusCodes.Status409Conflict);
-
-    group.MapGet("/invite/validate", async (
-     AppDbContext db,
-     string token,
-     string email,
-     CancellationToken ct
-   ) =>
-   {
-     email = email.Trim().ToLowerInvariant();
-
-     var invite = await db.UserInvites
-       .FirstOrDefaultAsync(i =>
-         i.Token == token &&
-         i.Email == email,
-         ct
-       );
-
-     if (invite is null) return Results.NotFound();
-     if (invite.ExpiryDate < DateTime.UtcNow)
-     {
-       return Results.BadRequest("Invite expired");
-     }
-
-     return Results.Ok();
-   }
- )
- .WithSummary("Validate a user invite")
- .WithDescription("Validates a user invite token and email before allowing registration.")
- .Produces(StatusCodes.Status200OK)
- .Produces(StatusCodes.Status400BadRequest)
- .Produces(StatusCodes.Status404NotFound);
-
 
     group.MapPut("/{id:int}", async (AppDbContext db, UserUpdateDto dto, int id) =>
       {

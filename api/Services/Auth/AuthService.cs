@@ -30,6 +30,12 @@ public static class AuthService
 
     group.MapPost("/register", async (UserCreateDto dto, AppDbContext db, TokenService tokenService) =>
     {
+      var validInvite = await db.UserInvites.FirstOrDefaultAsync(i => 
+        i.Email == dto.Email
+        && i.ExpiryDate > DateTime.UtcNow
+      );
+
+      if (validInvite is null) return Results.Unauthorized();
       var newUser = ModelUser.Create(dto);
       await db.Users.AddAsync(newUser);
       await db.SaveChangesAsync();
@@ -43,6 +49,7 @@ public static class AuthService
     .WithSummary("Register")
     .WithDescription("Creates a user and returns a signed access token")
     .Produces<TokenResponse>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
     .Produces(StatusCodes.Status404NotFound);
   }
 }
