@@ -5,8 +5,9 @@ using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ProjectModel = api.Models.Projects.Project;
 using api.Models.Projects;
-using api.Models.Request;
 using api.DTOs.Project;
+using ModelRequest = api.Models.Requests.Request;
+using api.Models.Requests;
 namespace api.Services.Request;
 
 public static class RequestService
@@ -69,6 +70,22 @@ public static class RequestService
     .WithDescription("Returns all requests for a specific client")
     .Produces<List<RequestResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
+
+    group.MapPost("/", async (AppDbContext db, RequestCreateDto dto) =>
+      {
+        var request = ModelRequest.Create(dto);
+
+        db.Requests.Add(request);
+        await db.SaveChangesAsync();
+        await db.Entry(request).Reference(r => r.Client).LoadAsync();
+
+        return Results.Created($"/request/{request.Id}", request.ToResponse());
+      }
+    )
+    .WithSummary("Create a new request")
+    .WithDescription("Creates a request and returns the newly created record.")
+    .Produces<RequestResponseDto>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest);
 
     group.MapPut("/{id:int}", async (AppDbContext db, RequestUpdateDto dto, int id) =>
       {

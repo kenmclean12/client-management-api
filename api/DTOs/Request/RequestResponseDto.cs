@@ -1,5 +1,5 @@
 using api.DTOs.Client;
-using api.Models.Request;
+using api.Models.Requests;
 
 namespace api.DTOs.Request;
 

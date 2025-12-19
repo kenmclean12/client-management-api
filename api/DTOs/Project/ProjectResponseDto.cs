@@ -1,7 +1,7 @@
 using api.DTOs.Jobs;
 using api.DTOs.User;
 using ModelClient = api.Models.Clients.Client;
-using api.Models.Request;
+using api.Models.Requests;
 using api.Models.Projects;
 
 namespace api.DTOs.Project;

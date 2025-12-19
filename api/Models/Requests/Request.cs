@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using api.DTOs.Request;
 using api.Models.Clients;
-using api.Models.Request;
 
 namespace api.Models.Requests;
 

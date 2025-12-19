@@ -1,6 +1,6 @@
 using api.Data;
 using api.DTOs.Request;
-using api.Models.Request;
+using api.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 using RequestModel = api.Models.Requests.Request;
 

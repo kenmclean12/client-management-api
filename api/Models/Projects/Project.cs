@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using api.DTOs.Project;
 using api.Models.Clients;
 using api.Models.Jobs;
-using api.Models.Request;
+using api.Models.Requests;
 using api.Models.Users;
 
 namespace api.Models.Projects;

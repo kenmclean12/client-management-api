@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using api.Models.Projects;
-using api.Models.Request;
+using api.Models.Requests;
 
 namespace api.DTOs.Project;
 

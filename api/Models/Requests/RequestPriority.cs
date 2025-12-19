@@ -1,4 +1,4 @@
-namespace api.Models.Request;
+namespace api.Models.Requests;
 
 public enum RequestPriority
 {
