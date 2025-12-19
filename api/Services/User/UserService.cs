@@ -6,6 +6,7 @@ using api.Helpers.Token;
 using api.Models.Users;
 using System.Security.Claims;
 using api.Services.Email;
+using System.Net;
 
 namespace api.Services.User;
 
@@ -88,8 +89,7 @@ public static class UserService
       db.UserInvites.Add(invite);
       await db.SaveChangesAsync(token);
 
-      var inviteLink =
-        $"{config["App:FrontendUrl"]}/register?email={email}";
+      var inviteLink = $"{config["App:FrontendUrl"]}/register?email={WebUtility.UrlEncode(email)}";
 
       await emailService.SendUserInviteAsync(email, inviteLink, env, token);
 
