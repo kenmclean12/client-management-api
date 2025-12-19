@@ -1,6 +1,7 @@
 using api.Data;
 using api.DTOs.Project;
 using api.Helpers.Token;
+using api.Models.Jobs;
 using api.Models.Projects;
 using api.Models.Users;
 using api.Services.Email;
@@ -58,7 +59,10 @@ public static class ProjectService
       {
         return Results.Ok(
           await db.Projects
-            .Where(p => p.AssignedUserId == id)
+            .Where(p =>
+              p.AssignedUserId == id
+              && p.ProjectStatus != ProjectStatus.Done
+            )
             .Include(p => p.Jobs)
             .Include((p) => p.AssignedUser)
             .Include(p => p.Client)
@@ -68,8 +72,8 @@ public static class ProjectService
       }
     )
     .RequireJwt()
-    .WithSummary("Find assigned Projects by User ID")
-    .WithDescription("Returns assigned projects for a particular user")
+    .WithSummary("Find active/assigned Projects by User ID")
+    .WithDescription("Returns active projects assigned to a particular user")
     .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 
@@ -80,6 +84,7 @@ public static class ProjectService
             .Where(p =>
               p.ClientId == id
               && p.EndDate == null
+              && p.ProjectStatus != ProjectStatus.Done
             )
             .Include(p => p.Jobs)
             .Include(p => p.AssignedUser)
@@ -90,8 +95,8 @@ public static class ProjectService
       }
     )
     .RequireJwt()
-    .WithSummary("Find projects by Client ID")
-    .WithDescription("Returns all projects for a particular Client")
+    .WithSummary("Find active projects by Client ID")
+    .WithDescription("Returns all active projects for a particular Client")
     .Produces<List<ProjectResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 

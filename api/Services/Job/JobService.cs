@@ -2,6 +2,7 @@ using api.Data;
 using api.DTOs.Job;
 using api.DTOs.Jobs;
 using api.Helpers.Token;
+using api.Models.Jobs;
 using api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using ModelJob = api.Models.Jobs.Job;
@@ -56,15 +57,18 @@ public static class JobService
           await db.Jobs
             .Include(j => j.Client)
             .Include(j => j.AssignedUser)
-            .Where(j => j.AssignedUserId == id)
+            .Where(j =>
+              j.AssignedUserId == id
+              && j.Status != JobStatus.Done
+            )
             .Select(j => j.ToResponse())
             .ToListAsync()
         );
       }
     )
     .RequireJwt()
-    .WithSummary("Find assigned jobs by User ID")
-    .WithDescription("Returns job records assigned to a particular user")
+    .WithSummary("Find active/assigned jobs by User ID")
+    .WithDescription("Returns active jobs assigned to a particular user")
     .Produces<List<JobResponseDto>>(StatusCodes.Status200OK)
     .Produces(StatusCodes.Status401Unauthorized);
 
